@@ -9,6 +9,7 @@ specifiers:
   '@trpc/next': ^10.0.0
   '@trpc/react-query': ^10.0.0
   '@trpc/server': ^10.0.0
+  '@types/humanize-duration': ^3.27.1
   '@types/node': ^18.0.0
   '@types/react': ^18.0.14
   '@types/react-dom': ^18.0.5
@@ -20,6 +21,7 @@ specifiers:
   eslint-config-next: 13.0.2
   eslint-config-prettier: ^8.5.0
   eslint-plugin-prettier: ^4.2.1
+  humanize-duration: ^3.27.3
   next: 13.0.2
   next-auth: ^4.18.3
   postcss: ^8.4.14
@@ -43,6 +45,7 @@ dependencies:
   '@trpc/react-query': 10.5.0_i3ykvnz4igoclzsim3lzrnoi4y
   '@trpc/server': 10.5.0
   daisyui: 2.43.2_r4gnkvssmvyxmi2wmat5xbx36a
+  humanize-duration: 3.27.3
   next: 13.0.2_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.6_pknogjuzx4bv7zxtatcb2ahtsq
   react: 18.2.0
@@ -51,6 +54,7 @@ dependencies:
   zod: 3.20.2
 
 devDependencies:
+  '@types/humanize-duration': 3.27.1
   '@types/node': 18.11.14
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.9
@@ -397,6 +401,10 @@ packages:
   /@trpc/server/10.5.0:
     resolution: {integrity: sha512-AJ4ckDpnN8xuqWBox68KDTFpG12ZxKkW7fi9XJ+TLtyyNyqOMVUvKH9070CdxhqBZjebTASryE+/6lntkDFQxA==}
     dev: false
+
+  /@types/humanize-duration/3.27.1:
+    resolution: {integrity: sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==}
+    dev: true
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -1551,6 +1559,10 @@ packages:
     engines: {node: '>= 0.4.0'}
     dependencies:
       function-bind: 1.1.1
+
+  /humanize-duration/3.27.3:
+    resolution: {integrity: sha512-iimHkHPfIAQ8zCDQLgn08pRqSVioyWvnGfaQ8gond2wf7Jq2jJ+24ykmnRyiz3fIldcn4oUuQXpjqKLhSVR7lw==}
+    dev: false
 
   /ignore/5.2.1:
     resolution: {integrity: sha512-d2qQLzTJ9WxQftPAuEQpSPmKqzxePjzVbpAVv62AQ64NTL+wR4JkrVqR/LqFsFEUsHDAiId52mJteHDFuDkElA==}

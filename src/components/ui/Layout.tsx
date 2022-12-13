@@ -1,17 +1,31 @@
 import { useSession } from 'next-auth/react';
-import type { PropsWithChildren } from 'react';
+import { useRouter } from 'next/router';
+import { type PropsWithChildren } from 'react';
+import { TemporaryAccountAlert } from '../auth/TemporaryAccountAlert';
 import { AccountRequiredGuard } from './AccountRequiredGuard';
 import { Header } from './Header';
 
+const isSpecialPage = (path: string) => ['/', '/login', '/signup'].includes(path);
+
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  // todo: determine actual values
-  const accountRequired = false;
-  const isHomePage = true;
+  const { asPath: path } = useRouter();
+  const accountRequired = !isSpecialPage(path);
+  const isHomePage = path === '/';
   const { status } = useSession();
+
+  // TODO: Store and retrieve account expiry date
+  const accountExpiryDate = new Date(2022, 11, 31); /*data?.user?.temporaryAccountExpiresOn*/
+  const bannerVisible = accountRequired && !!accountExpiryDate;
 
   return (
     <div className={`h-full ${accountRequired ? 'overflow-hidden' : ''}`}>
       <AccountRequiredGuard />
+
+      {bannerVisible && (
+        <div className="container fixed bottom-4 left-0 right-0 z-50 mx-auto max-w-4xl px-2 md:px-0">
+          <TemporaryAccountAlert temporaryAccountExpiresOn={accountExpiryDate} />
+        </div>
+      )}
 
       <div
         className={`container relative h-full px-2 md:px-0 ${isHomePage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}
@@ -19,9 +33,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         <Header visible={status === 'authenticated' && !isHomePage} />
       </div>
 
-      <main className={`${isHomePage ? '' : 'h-full pt-4 md:pt-32'}`} /*todo: pb-20 if showTempAccountBanner */>
-        {children}
-      </main>
+      <main className={`${isHomePage ? '' : 'h-full pt-4 md:pt-32'} ${bannerVisible ? 'pb-20' : ''}`}>{children}</main>
     </div>
 
     // Modal portal
