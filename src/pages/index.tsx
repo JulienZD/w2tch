@@ -1,10 +1,12 @@
 import { type NextPage } from 'next';
+import { SEO } from '~/components/common/SEO';
 
 const Home: NextPage = () => {
   const user = {} as { name: string };
   const tagline = 'tagline';
   return (
     <>
+      <SEO />
       <div className="hero min-h-screen">
         <div className="hero-content">
           <div className="max-w-xs sm:max-w-xl">
