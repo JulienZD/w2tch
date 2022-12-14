@@ -11,6 +11,7 @@ specifiers:
   '@trpc/next': ^10.0.0
   '@trpc/react-query': ^10.0.0
   '@trpc/server': ^10.0.0
+  '@types/bcryptjs': ^2.4.2
   '@types/humanize-duration': ^3.27.1
   '@types/node': ^18.0.0
   '@types/react': ^18.0.14
@@ -18,6 +19,8 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.33.0
   '@typescript-eslint/parser': ^5.33.0
   autoprefixer: ^10.4.7
+  bcryptjs: ^2.4.3
+  cookies-next: ^2.1.1
   daisyui: ^2.43.2
   eslint: ^8.26.0
   eslint-config-next: 13.0.2
@@ -30,6 +33,7 @@ specifiers:
   prettier: ^2.7.1
   prettier-plugin-tailwindcss: ^0.1.13
   prisma: ^4.5.0
+  random-word-slugs: ^0.1.6
   react: 18.2.0
   react-dom: 18.2.0
   react-hook-form: ^7.40.0
@@ -49,10 +53,13 @@ dependencies:
   '@trpc/next': 10.5.0_mn5xuvrpncffxfw5isuprumd5e
   '@trpc/react-query': 10.5.0_i3ykvnz4igoclzsim3lzrnoi4y
   '@trpc/server': 10.5.0
+  bcryptjs: 2.4.3
+  cookies-next: 2.1.1
   daisyui: 2.43.2_r4gnkvssmvyxmi2wmat5xbx36a
   humanize-duration: 3.27.3
   next: 13.0.2_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.6_pknogjuzx4bv7zxtatcb2ahtsq
+  random-word-slugs: 0.1.6
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.40.0_react@18.2.0
@@ -60,6 +67,7 @@ dependencies:
   zod: 3.20.2
 
 devDependencies:
+  '@types/bcryptjs': 2.4.2
   '@types/humanize-duration': 3.27.1
   '@types/node': 18.11.14
   '@types/react': 18.0.26
@@ -428,6 +436,14 @@ packages:
     resolution: {integrity: sha512-AJ4ckDpnN8xuqWBox68KDTFpG12ZxKkW7fi9XJ+TLtyyNyqOMVUvKH9070CdxhqBZjebTASryE+/6lntkDFQxA==}
     dev: false
 
+  /@types/bcryptjs/2.4.2:
+    resolution: {integrity: sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==}
+    dev: true
+
+  /@types/cookie/0.4.1:
+    resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
+    dev: false
+
   /@types/humanize-duration/3.27.1:
     resolution: {integrity: sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==}
     dev: true
@@ -439,6 +455,10 @@ packages:
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
+
+  /@types/node/16.18.9:
+    resolution: {integrity: sha512-nhrqXYxiQ+5B/tPorWum37VgAiefi/wmfJ1QZKGKKecC8/3HqcTTJD0O+VABSPwtseMMF7NCPVT9uGgwn0YqsQ==}
+    dev: false
 
   /@types/node/18.11.14:
     resolution: {integrity: sha512-0KXV57tENYmmJMl+FekeW9V3O/rlcqGQQJ/hNh9r8pKIj304pskWuEd8fCyNT86g/TpO0gcOTiLzsHLEURFMIQ==}
@@ -750,6 +770,10 @@ packages:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
 
+  /bcryptjs/2.4.3:
+    resolution: {integrity: sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==}
+    dev: false
+
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
@@ -850,9 +874,22 @@ packages:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
 
+  /cookie/0.4.2:
+    resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
   /cookie/0.5.0:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /cookies-next/2.1.1:
+    resolution: {integrity: sha512-AZGZPdL1hU3jCjN2UMJTGhLOYzNUN9Gm+v8BdptYIHUdwz397Et1p+sZRfvAl8pKnnmMdX2Pk9xDRKCGBum6GA==}
+    dependencies:
+      '@types/cookie': 0.4.1
+      '@types/node': 16.18.9
+      cookie: 0.4.2
     dev: false
 
   /copy-anything/3.0.3:
@@ -2272,6 +2309,10 @@ packages:
   /quick-lru/5.1.1:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
+
+  /random-word-slugs/0.1.6:
+    resolution: {integrity: sha512-EVPGKyhXTdnBlMCrqBvby3nf9Jz+W/rVuP2nOi68aDZa6VJ2OXvz+VDCwl8jULBLZ1Ht8wscRA+/SogeI9NYGw==}
+    dev: false
 
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}

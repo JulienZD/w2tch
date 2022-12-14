@@ -47,13 +47,17 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id                    String                  @id @default(cuid())
+  name                  String?
+  email                 String?                 @unique
+  emailVerified         DateTime?
+  password              String
+  image                 String?
+  accounts              Account[]
+  sessions              Session[]
+
+  watchlists            Watchlist[]
+  watchersOnWatchlists  WatchersOnWatchlists[]
 }
 
 model VerificationToken {
@@ -62,4 +66,69 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Watchlist {
+  id String @id @default(uuid())
+
+  name String
+
+  owner    User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId  String
+  watchers WatchersOnWatchlists[]
+  movies   MoviesOnWatchlists[]
+
+  openInvites WatchlistInvite[]
+
+  createdAt DateTime? @default(now()) @ignore
+  updatedAt DateTime? @default(now()) @updatedAt @ignore
+}
+
+model WatchersOnWatchlists {
+  watcher   User   @relation(fields: [watcherId], references: [id], onDelete: Cascade)
+  watcherId String
+
+  watchList   Watchlist @relation(fields: [watchListId], references: [id], onDelete: Cascade)
+  watchListId String
+
+  joinedAt DateTime @default(now()) @ignore
+
+  @@id([watcherId, watchListId])
+}
+
+enum ExternalMovieSource {
+  TMDB
+}
+
+model Movie {
+  id String @id @default(uuid())
+
+  name        String
+  rating      Decimal?              @db.Decimal(10, 2)
+  externalId  String
+  source      ExternalMovieSource
+  watchLists  MoviesOnWatchlists[]
+
+  @@unique([source, externalId])
+}
+
+model MoviesOnWatchlists {
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Restrict)
+  movieId String
+
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  watchlistId String
+
+  seenOn DateTime?
+
+  @@id([movieId, watchlistId])
+}
+
+model WatchlistInvite {
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  watchlistId String     @unique
+
+  inviteCode    String
+  validUntil    DateTime?
+  remainingUses Int       @default(-1)
 }
