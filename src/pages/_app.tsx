@@ -6,13 +6,16 @@ import { trpc } from '../utils/trpc';
 
 import '../styles/globals.css';
 import { Layout } from '~/components/ui/Layout';
+import { ThemeContextProvider } from '~/contexts/ThemeProvider';
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <ThemeContextProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </ThemeContextProvider>
     </SessionProvider>
   );
 };

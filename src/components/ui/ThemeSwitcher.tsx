@@ -2,7 +2,7 @@ import { IconMoon, IconSun } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 
 export const ThemeSwitcher: React.FC = () => {
-  const [theme, setTheme] = useState('night');
+  const [theme, setTheme] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -19,6 +19,8 @@ export const ThemeSwitcher: React.FC = () => {
     localStorage.setItem('theme', theme);
     document.querySelector('html')?.setAttribute('data-theme', theme);
   };
+
+  if (!theme) return null;
 
   return (
     <label className="swap-rotate swap">
