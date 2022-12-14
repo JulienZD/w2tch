@@ -31,9 +31,11 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         className={`container relative h-full px-2 md:px-0 ${isHomePage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}
       >
         <Header visible={status === 'authenticated' && !isHomePage} />
-      </div>
 
-      <main className={`${isHomePage ? '' : 'h-full pt-4 md:pt-32'} ${bannerVisible ? 'pb-20' : ''}`}>{children}</main>
+        <main className={`${isHomePage ? '' : 'h-full pt-4 md:pt-32'} ${bannerVisible ? 'pb-20' : ''}`}>
+          {children}
+        </main>
+      </div>
     </div>
 
     // Modal portal
