@@ -10,3 +10,7 @@ html[data-theme='winter'] {
 html[data-theme='night'] {
   @apply bg-gradient-to-tr from-transparent to-blue-900;
 }
+
+#__next {
+  @apply h-full;
+}
