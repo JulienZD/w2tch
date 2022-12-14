@@ -77,6 +77,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       maxAge: THIRTY_DAYS,
       updateAge: TWENTY_FOUR_HOURS,
     },
+    pages: {
+      signIn: '/login',
+    },
     jwt: {
       encode: async ({ token, secret, maxAge }) => {
         if (!isCredentialsCallback(req)) {
