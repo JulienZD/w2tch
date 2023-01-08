@@ -15,7 +15,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 
   // TODO: Store and retrieve account expiry date
   const accountExpiryDate = new Date(2022, 11, 31); /*data?.user?.temporaryAccountExpiresOn*/
-  const bannerVisible = accountRequired && !!accountExpiryDate;
+  const bannerVisible = false; // accountRequired && !!accountExpiryDate;
 
   return (
     <div className={`h-full ${accountRequired ? 'overflow-hidden' : ''}`}>
