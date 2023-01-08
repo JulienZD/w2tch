@@ -2,7 +2,8 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createWatchlistSchema } from '~/models/watchlist';
-import { addMovieToWatchlist, zWatchListAddMovie } from '~/server/data/watchlist/mutations';
+import { findTMDBEntry } from '~/server/data/tmdb';
+import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
 import { protectedProcedure, router } from '../trpc';
@@ -26,14 +27,18 @@ export const watchlistRouter = router({
     return { id: watchlist.id };
   }),
   addItem: protectedProcedure
-    .input(zWatchListAddMovie.extend({ watchlistId: z.string() }))
+    .input(zWatchListAddEntry.extend({ watchlistId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const watchlist = await getWatchlistById(input.watchlistId, ctx.session.user.id, ctx.prisma);
 
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
+      const tmdbEntry = await findTMDBEntry(input.id, input.type);
+
+      if (!tmdbEntry) throw new TRPCError({ code: 'NOT_FOUND', message: 'Entry not found' });
+
       try {
-        await addMovieToWatchlist(input.watchlistId, input, ctx.prisma);
+        await addEntryToWatchlist(input.watchlistId, { ...tmdbEntry, type: input.type }, ctx.prisma);
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw createTRPCErrorFromDatabaseError(error);
@@ -47,10 +52,10 @@ export const watchlistRouter = router({
       const watchlist = await getWatchlistById(input.watchlistId, ctx.session.user.id, ctx.prisma);
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
-      await ctx.prisma.moviesOnWatchlists.update({
+      await ctx.prisma.watchablesOnWatchlists.update({
         where: {
-          movieId_watchlistId: {
-            movieId: input.id,
+          watchableId_watchlistId: {
+            watchableId: input.id,
             watchlistId: input.watchlistId,
           },
         },
@@ -65,10 +70,10 @@ export const watchlistRouter = router({
       const watchlist = await getWatchlistById(input.watchlistId, ctx.session.user.id, ctx.prisma);
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
-      await ctx.prisma.moviesOnWatchlists.delete({
+      await ctx.prisma.watchablesOnWatchlists.delete({
         where: {
-          movieId_watchlistId: {
-            movieId: input.id,
+          watchableId_watchlistId: {
+            watchableId: input.id,
             watchlistId: input.watchlistId,
           },
         },

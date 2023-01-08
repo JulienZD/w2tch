@@ -4,11 +4,12 @@ import { Autocomplete, type SelectItem } from '~/components/input/Autocomplete';
 import { Rating } from '~/components/ui/Rating';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useTMDBSearch } from '~/hooks/useTMDBSearch';
+import type { TMDBEntryType } from '~/server/data/tmdb/models';
 
 type TMDBAutocompleteProps = {
   initialQuery: string;
-  onSelect: (item: SelectItem) => void;
-  excludeItems?: { externalId: string | number }[];
+  onSelect: (item: SelectItem & { type: TMDBEntryType }) => void;
+  excludeItems?: { externalId: string | number; type: TMDBEntryType }[];
 };
 
 const SEARCH_THUMB_WIDTH = 36;
@@ -23,12 +24,12 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery
   const items = data.data ?? [];
 
   const filteredItems = excludeItems
-    ? items.filter((item) => !excludeItems?.find(({ externalId }) => externalId == item.id))
+    ? items.filter((item) => !excludeItems?.find(({ externalId, type }) => type === item.type && externalId == item.id)) // weak comparison is on purpose
     : items;
 
   return (
     <Autocomplete
-      onSelect={onSelect}
+      onSelect={onSelect as never} // Handler type is valid, but it would override the component's generic type
       items={filteredItems}
       onSearch={setQuery}
       query={query}

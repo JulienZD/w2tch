@@ -1,13 +1,13 @@
-import type { PrismaClient, Movie, MoviesOnWatchlists } from '@prisma/client';
+import type { PrismaClient, Watchable, WatchablesOnWatchlists } from '@prisma/client';
 
-export const enhanceWatchlistMovie = ({
+export const enhanceWatchlistWatchable = ({
   seenOn,
-  movie,
-}: MoviesOnWatchlists & {
-  movie: Movie;
+  watchable,
+}: WatchablesOnWatchlists & {
+  watchable: Watchable;
 }) => ({
-  ...movie,
-  rating: movie.rating?.toNumber(),
+  ...watchable,
+  rating: watchable.rating?.toNumber(),
   seenOn,
 });
 
@@ -24,7 +24,7 @@ export const getWatchlistsForUser = async (userId: string, prisma: PrismaClient)
       _count: {
         select: {
           watchers: true,
-          movies: true,
+          watchables: true,
         },
       },
     },
@@ -34,7 +34,7 @@ export const getWatchlistsForUser = async (userId: string, prisma: PrismaClient)
     ...watchlist,
     isOwner: watchlist.ownerId === userId,
     memberCount: _count.watchers,
-    movieCount: _count.movies,
+    watchableCount: _count.watchables,
   }));
 };
 
@@ -46,14 +46,15 @@ export const getWatchlistById = async (id: string, userId: string, prisma: Prism
           name: true,
         },
       },
-      movies: {
+      watchables: {
         include: {
-          movie: {
+          watchable: {
             select: {
               name: true,
               id: true,
               externalId: true,
               rating: true,
+              type: true,
               source: true,
             },
           },
@@ -62,7 +63,7 @@ export const getWatchlistById = async (id: string, userId: string, prisma: Prism
       _count: {
         select: {
           watchers: true,
-          movies: true,
+          watchables: true,
         },
       },
     },
@@ -90,14 +91,14 @@ export const getWatchlistById = async (id: string, userId: string, prisma: Prism
   // Prisma's returned data structure isn't very easy to work with to display data,
   // so we map it into a better structure
   const { _count, ...watchlistData } = watchlist;
-  const enhancedMovies = watchlistData.movies.map(enhanceWatchlistMovie);
-  const sortedMovies = [...enhancedMovies].sort((a, b) => a.id.localeCompare(b.id));
+  const enhancedWatchables = watchlistData.watchables.map(enhanceWatchlistWatchable);
+  const sortedWatchables = [...enhancedWatchables].sort((a, b) => a.id.localeCompare(b.id));
   const mappedWatchList = {
     ...watchlistData,
     isOwner: watchlist.ownerId === userId,
     memberCount: _count.watchers,
-    movieCount: _count.movies,
-    movies: sortedMovies,
+    watchableCount: _count.watchables,
+    watchables: sortedWatchables,
   };
 
   return mappedWatchList;

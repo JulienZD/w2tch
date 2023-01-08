@@ -13,10 +13,10 @@ type RenderValueProps<T = unknown> = {
 };
 
 type AutocompleteProps<T> = {
-  onSelect: (item: SelectItem<T>) => void;
+  items: SelectItem<T>[];
+  onSelect: (item: SelectItem) => void;
   onSearch: (query: string) => void;
   query: string;
-  items: SelectItem<T>[];
   renderValue?: React.FC<RenderValueProps<T>>;
   openDropdownButton?: boolean;
   placeholder?: string;
@@ -40,9 +40,9 @@ const DefaultRenderValue: React.FC<RenderValueProps> = ({ item, renderOptions })
 
 // eslint-disable-next-line func-style
 export function Autocomplete<T>({
+  items,
   onSelect,
   onSearch,
-  items,
   query,
   openDropdownButton = true,
   placeholder = 'Search...',

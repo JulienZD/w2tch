@@ -1,47 +1,52 @@
 import type { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { enhanceWatchlistMovie } from './queries';
+import { TMDBEntryTypes } from '../tmdb/models';
+import { enhanceWatchlistWatchable } from './queries';
 
-export const zWatchListAddMovie = z.object({
+export const zWatchListAddEntry = z.object({
   id: z.string().or(z.number()).transform(String),
-  title: z.string().min(1),
-  rating: z.number().min(0).max(10).nullable(),
+  type: z.enum(TMDBEntryTypes),
 });
 
-export type WatchListAddMovie = z.infer<typeof zWatchListAddMovie>;
+type WatchListAddEntry = z.infer<typeof zWatchListAddEntry> & {
+  rating: number;
+  name: string;
+};
 
-export const addMovieToWatchlist = async (watchlistId: string, movie: WatchListAddMovie, prisma: PrismaClient) => {
+export const addEntryToWatchlist = async (watchlistId: string, entry: WatchListAddEntry, prisma: PrismaClient) => {
   const result = await prisma.watchlist.update({
     where: {
       id: watchlistId,
     },
     include: {
-      movies: {
+      watchables: {
         where: {
-          movie: {
-            externalId: movie.id,
+          watchable: {
+            externalId: entry.id,
           },
         },
         include: {
-          movie: true,
+          watchable: true,
         },
       },
     },
     data: {
-      movies: {
+      watchables: {
         create: {
-          movie: {
+          watchable: {
             connectOrCreate: {
               where: {
-                source_externalId: {
-                  externalId: movie.id,
+                source_externalId_type: {
+                  externalId: entry.id,
                   source: 'TMDB',
+                  type: entry.type,
                 },
               },
               create: {
-                name: movie.title,
-                rating: movie.rating,
-                externalId: movie.id,
+                name: entry.name,
+                rating: entry.rating.toPrecision(2),
+                externalId: entry.id,
+                type: entry.type,
                 source: 'TMDB',
               },
             },
@@ -51,7 +56,7 @@ export const addMovieToWatchlist = async (watchlistId: string, movie: WatchListA
     },
   });
 
-  const [movieResult] = result.movies.map(enhanceWatchlistMovie);
+  const [watchableResult] = result.watchables.map(enhanceWatchlistWatchable);
 
-  return movieResult;
+  return watchableResult;
 };

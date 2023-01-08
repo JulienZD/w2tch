@@ -1,6 +1,8 @@
+import { WatchableType } from '@prisma/client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import type { WatchListAddMovie } from '~/server/data/watchlist/mutations';
+import type { z } from 'zod';
+import type { zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { trpc } from '~/utils/trpc';
 import { TMDBAutocomplete } from './TMDBAutocomplete';
 
@@ -10,11 +12,10 @@ type AddItemProps = {
 
 export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
   const [query, setQuery] = useState('');
-  const form = useForm<WatchListAddMovie>({
+  const form = useForm<z.infer<typeof zWatchListAddEntry>>({
     defaultValues: {
       id: '',
-      rating: 0,
-      title: '',
+      type: WatchableType.MOVIE,
     },
   });
   const trpcUtil = trpc.useContext();
@@ -44,9 +45,9 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
           initialQuery={query}
           onSelect={(item) => {
             form.setValue('id', String(item.id));
-            form.setValue('title', item.name);
+            form.setValue('type', item.type);
           }}
-          excludeItems={watchlist.movies}
+          excludeItems={watchlist.watchables}
         />
 
         <button

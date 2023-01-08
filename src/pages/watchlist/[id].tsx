@@ -14,7 +14,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
     return null;
   }
 
-  const unseenMovies = watchlist.movies.filter((m) => !m.seenOn);
+  const unseenWatchables = watchlist.watchables.filter((m) => !m.seenOn);
 
   return (
     <div className="prose max-w-full">
@@ -41,7 +41,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
             )}
           </div>
           <span className="whitespace-nowrap">
-            <Pluralize count={watchlist.movieCount} word="movie" />
+            <Pluralize count={watchlist.watchableCount} word="entry" />
           </span>
         </div>
       </div>
@@ -50,7 +50,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
       <div className="divider" />
 
-      <WatchlistContent items={watchlist.movies} watchlistId={watchlistId} />
+      <WatchlistContent items={watchlist.watchables} watchlistId={watchlistId} />
     </div>
   );
 };

@@ -31,7 +31,7 @@ const Dashboard: NextPage = () => {
                     {watchlist.isOwner && <div className="badge-ghost badge">owner</div>}
                   </h2>
                   <Pluralize word="member" count={watchlist.memberCount} />
-                  <Pluralize word="movie" count={watchlist.movieCount} />
+                  <Pluralize word="entry" count={watchlist.watchableCount} />
                 </div>
               </div>
             ))}

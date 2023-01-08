@@ -1,14 +1,14 @@
 import { Menu, Transition } from '@headlessui/react';
 import { EllipsisVerticalIcon, EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/react/20/solid';
-import type { Movie as PrismaMovie, MoviesOnWatchlists } from '@prisma/client';
+import type { Watchable as PrismaWatchable, WatchablesOnWatchlists } from '@prisma/client';
 import { forwardRef, Fragment, memo, useCallback } from 'react';
 import { Rating } from '~/components/ui/Rating';
 import { SeenBadge } from '~/components/ui/SeenBadge';
 import { useBreakpoint } from '~/hooks/useTWBreakpoint';
 import { trpc } from '~/utils/trpc';
 
-type WatchlistItem = Omit<PrismaMovie, 'rating' | 'source'> &
-  Pick<MoviesOnWatchlists, 'seenOn'> & {
+type WatchlistItem = Omit<PrismaWatchable, 'rating' | 'source'> &
+  Pick<WatchablesOnWatchlists, 'seenOn'> & {
     rating?: number;
   };
 
@@ -53,7 +53,7 @@ const ToggleMarkAsSeen = forwardRef<
 ToggleMarkAsSeen.displayName = 'ToggleMarkAsSeen';
 
 // Component is memoized to prevent re-rendering every item when one item is updated
-const WatchlistContextMenu: React.FC<{ item: WatchlistItem & Pick<MoviesOnWatchlists, 'seenOn' | 'watchlistId'> }> =
+const WatchlistContextMenu: React.FC<{ item: WatchlistItem & Pick<WatchablesOnWatchlists, 'seenOn' | 'watchlistId'> }> =
   memo(
     ({ item }) => {
       const trpcUtil = trpc.useContext();
@@ -69,14 +69,14 @@ const WatchlistContextMenu: React.FC<{ item: WatchlistItem & Pick<MoviesOnWatchl
             },
             {
               ...previousData,
-              movies: previousData.movies.map((movie) => {
-                if (movie.id === newItem.id) {
+              watchables: previousData.watchables.map((watchable) => {
+                if (watchable.id === newItem.id) {
                   return {
-                    ...movie,
+                    ...watchable,
                     seenOn: newItem.seenOn,
                   };
                 }
-                return movie;
+                return watchable;
               }),
             }
           );
@@ -186,14 +186,14 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
               },
               {
                 ...oldData,
-                movies: oldData.movies.map((movie) => {
-                  if (movie.id === id) {
+                watchables: oldData.watchables.map((watchable) => {
+                  if (watchable.id === id) {
                     return {
-                      ...movie,
+                      ...watchable,
                       seenOn: newSeenOn,
                     };
                   }
-                  return movie;
+                  return watchable;
                 }),
               }
             );
