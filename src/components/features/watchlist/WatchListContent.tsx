@@ -141,27 +141,12 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
     <table className="table">
       {items.map((item, index) => (
         <Fragment key={item.id}>
-          <tr className="table-row hover:bg-base-100/50 md:hidden">
-            <td>{index + 1}</td>
-            <td className="w-full">
-              <div className="inline-flex w-full items-center justify-between gap-x-4">
-                <div className="inline-flex flex-col">
-                  <span className="whitespace-pre-wrap">{item.name}</span>
-                  {item.rating !== undefined && <Rating score={item.rating} />}
-                </div>
-                <SeenBadge seenOn={item.seenOn} />
-              </div>
-            </td>
-            <td className="not-prose">
-              <WatchlistContextMenu item={{ ...item, watchlistId }} />
-            </td>
-          </tr>
-          <tr className="hidden hover:bg-base-100/50 md:table-row">
+          <tr className="table-row hover:bg-base-100/50">
             <td>{index + 1}</td>
             <td>{item.name}</td>
             <td>{item.rating !== undefined && <Rating score={item.rating} />}</td>
             <td>
-              <div className="inline-flex h-full w-full items-center justify-end">
+              <div className="inline-flex h-full w-full items-center justify-end md:h-auto md:justify-between md:gap-x-4">
                 <SeenBadge seenOn={item.seenOn} />
               </div>
             </td>
