@@ -18,6 +18,8 @@ export const serverSchema = z.object({
   ),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
+  MOVIEDB_API_V3_KEY: z.string(),
+  MOVIEDB_API_V3_URL: z.string().url(),
 });
 
 /**
