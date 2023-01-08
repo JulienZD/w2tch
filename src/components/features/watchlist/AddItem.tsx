@@ -4,11 +4,10 @@ import { trpc } from '~/utils/trpc';
 import { TMDBAutocomplete } from './TMDBAutocomplete';
 
 type AddItemProps = {
-  showForm: boolean;
   watchlistId: string;
 };
 
-export const AddItem: React.FC<AddItemProps> = ({ showForm, watchlistId }) => {
+export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
   const form = useForm<WatchListAddMovie>({
     defaultValues: {
       id: '',
@@ -27,12 +26,12 @@ export const AddItem: React.FC<AddItemProps> = ({ showForm, watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
 
   const addMovie = form.handleSubmit((movie) => {
-    if (addItem.isLoading) return;
+    if (addItem.isLoading || !movie.id) return;
 
     addItem.mutate({ watchlistId, ...movie });
   });
 
-  if (!showForm || !watchlist) return null;
+  if (!watchlist) return null;
 
   return (
     <form onSubmit={addMovie}>
@@ -45,8 +44,8 @@ export const AddItem: React.FC<AddItemProps> = ({ showForm, watchlistId }) => {
           excludeItems={watchlist.movies}
         />
 
-        <button type="submit" className={`btn-primary btn-square btn-sm btn ${addItem.isLoading ? 'loading' : ''}`}>
-          {addItem.isLoading ? '' : '+'}
+        <button type="submit" className={`btn-primary btn px-2 py-2 ${addItem.isLoading ? 'loading' : ''}`}>
+          Add
         </button>
       </div>
     </form>

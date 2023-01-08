@@ -1,16 +1,12 @@
-import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
-import { Pluralize } from '~/components/util/Pluralize';
-import { trpc } from '~/utils/trpc';
 import { PlusIcon } from '@heroicons/react/20/solid';
-import { useState } from 'react';
+import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
+import { Pluralize } from '~/components/util/Pluralize';
+import { trpc } from '~/utils/trpc';
 
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
-
-  const [showAddMovieForm, setShowAddMovieForm] = useState(false);
-  const [randomizerMode, setRandomizerMode] = useState(false);
 
   const openInviteModal = () => undefined;
 
@@ -49,25 +45,8 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
           </span>
         </div>
       </div>
-      <div className={`${!randomizerMode ? 'justify-between' : 'justify-end'} ${showAddMovieForm ? '' : 'flex'}`}>
-        {!randomizerMode ? (
-          <>
-            <button className="btn-primary btn-sm btn" onClick={() => setShowAddMovieForm((old) => !old)}>
-              {showAddMovieForm ? 'Hide search' : 'Add movie'}
-            </button>
-            <AddItem watchlistId={watchlist.id} showForm={showAddMovieForm} />
-          </>
-        ) : (
-          <button
-            className="btn-secondary btn-sm btn"
-            onClick={() => setRandomizerMode((old) => !old)}
-            disabled={!unseenMovies.length}
-            title={!unseenMovies.length ? 'There are no unseen movies!' : ''}
-          >
-            {!randomizerMode ? 'Pick a random movie' : 'Back'}
-          </button>
-        )}
-      </div>
+
+      <AddItem watchlistId={watchlist.id} />
 
       <div className="divider" />
 
