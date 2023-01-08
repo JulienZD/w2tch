@@ -26,36 +26,25 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ onSelect, ex
       onSearch={setQuery}
       openDropdownButton={false}
       renderValue={({ item, renderOptions }) => {
-        const { selected, active } = renderOptions;
+        const { selected } = renderOptions;
 
         return (
-          <>
-            <div className="flex items-center gap-x-2">
-              {item.image ? (
-                <Image
-                  src={`https://image.tmdb.org/t/p/w92${item.image}`}
-                  alt=""
-                  width={36}
-                  height={54}
-                  style={{
-                    width: 'auto',
-                    height: 'auto',
-                  }}
-                  className="max-h-12"
-                />
-              ) : null}
-              <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item.name}</span>
-            </div>
-            {selected ? (
-              <span
-                className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                  active ? 'text-white' : 'text-teal-600'
-                }`}
-              >
-                <CheckIcon className="h-5 w-5" aria-hidden="true" />
-              </span>
+          <div className="flex max-h-12 items-center gap-x-2">
+            {item.image ? (
+              <Image
+                src={`https://image.tmdb.org/t/p/w92${item.image}`}
+                alt=""
+                width={36}
+                height={48}
+                style={{
+                  width: 'auto',
+                  height: 'auto',
+                }}
+                className="max-h-12"
+              />
             ) : null}
-          </>
+            <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item.name}</span>
+          </div>
         );
       }}
     />

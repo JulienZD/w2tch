@@ -70,13 +70,13 @@ export function Autocomplete<T>({
   const Value = RenderValue || DefaultRenderValue;
 
   return (
-    <div className="z-50">
+    <div className="z-50 w-full">
       <Combobox value={selected} onChange={handleSelect}>
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
             <Combobox.Input
               placeholder={placeholder}
-              className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-base-content focus:ring-0"
+              className="input-bordered input mt-2 w-full border-current bg-transparent py-2 pl-3 pr-10 text-sm leading-5 focus:ring-0"
               displayValue={(result: SelectItem<T> | undefined) => result?.name ?? ''}
               onChange={(event) => handleSearch(event.target.value)}
             />
@@ -93,7 +93,7 @@ export function Autocomplete<T>({
             leaveTo="opacity-0"
             afterLeave={() => setQuery('')}
           >
-            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-base-100 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Combobox.Options className="absolute mt-1 max-h-60 w-full list-none overflow-auto rounded-md bg-base-100 py-1 pl-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {items.length === 0 && query !== '' ? (
                 <div className="relative cursor-default select-none py-2 px-4 text-base-content">Nothing found.</div>
               ) : (
@@ -101,7 +101,7 @@ export function Autocomplete<T>({
                   <Combobox.Option
                     key={result.id}
                     className={({ active }) =>
-                      `relative cursor-pointer select-none py-2 px-4 ${
+                      `relative cursor-pointer select-none py-2 ${
                         active ? 'bg-teal-600 text-white' : 'text-base-content'
                       }`
                     }
