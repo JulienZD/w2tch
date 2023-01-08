@@ -12,7 +12,7 @@ const getBaseUrl = () => {
 };
 
 export const trpc = createTRPCNext<AppRouter>({
-  config() {
+  config({ ctx }) {
     return {
       transformer: superjson,
       links: [
@@ -22,6 +22,16 @@ export const trpc = createTRPCNext<AppRouter>({
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          headers() {
+            if (ctx?.req) {
+              return {
+                ...ctx.req.headers,
+                // Optional: inform server that it's an SSR request
+                'x-ssr': '1',
+              };
+            }
+            return {};
+          },
         }),
       ],
     };

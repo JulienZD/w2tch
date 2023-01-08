@@ -21,7 +21,7 @@ const addTimeToDate = (time: number, date: Date) => {
 const isCredentialsCallback = (req: NextApiRequest) =>
   req.query.nextauth?.includes('callback') && req.query.nextauth?.includes('credentials') && req.method === 'POST';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): NextAuthOptions => {
   const adapter = PrismaAdapter(prisma);
 
   const callbacks: Partial<CallbacksOptions> = {
@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   };
 
-  const options: NextAuthOptions = {
+  const authOptions: NextAuthOptions = {
     session: {
       maxAge: THIRTY_DAYS,
       updateAge: TWENTY_FOUR_HOURS,
@@ -138,6 +138,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     callbacks: callbacks,
   };
 
+  return authOptions;
+};
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const authOptions = createAuthOptions(req, res);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return await NextAuth(req, res, options);
+  return await NextAuth(req, res, authOptions);
 }
