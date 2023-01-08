@@ -93,6 +93,9 @@ model WatchersOnWatchlists {
 
   joinedAt DateTime @default(now()) @ignore
 
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
+
   @@id([watcherId, watchListId])
 }
 
@@ -116,6 +119,9 @@ model Watchable {
   source     ExternalWatchableSource
   watchLists WatchablesOnWatchlists[]
 
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
+
   @@unique([source, externalId, type])
   @@index([type])
 }
@@ -129,6 +135,9 @@ model WatchablesOnWatchlists {
 
   seenOn DateTime?
 
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
+
   @@id([watchableId, watchlistId])
 }
 
@@ -139,4 +148,7 @@ model WatchlistInvite {
   inviteCode    String
   validUntil    DateTime?
   remainingUses Int       @default(-1)
+
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
 }
