@@ -14,7 +14,8 @@ type RenderValueProps<T = unknown> = {
 
 type AutocompleteProps<T> = {
   onSelect: (item: SelectItem<T>) => void;
-  onSearch?: (query: string) => void;
+  onSearch: (query: string) => void;
+  query: string;
   items: SelectItem<T>[];
   renderValue?: React.FC<RenderValueProps<T>>;
   openDropdownButton?: boolean;
@@ -42,12 +43,12 @@ export function Autocomplete<T>({
   onSelect,
   onSearch,
   items,
+  query,
   openDropdownButton = true,
   placeholder = 'Search...',
   renderValue: RenderValue,
 }: AutocompleteProps<T>) {
   const [selected, setSelected] = useState<SelectItem<T> | undefined>(undefined);
-  const [query, setQuery] = useState('');
 
   const handleSelect = useCallback(
     (selectedValue: SelectItem<T>) => {
@@ -59,12 +60,9 @@ export function Autocomplete<T>({
 
   const handleSearch = useCallback(
     (newQuery: string) => {
-      setQuery(newQuery);
-      if (onSearch) {
-        onSearch(newQuery);
-      }
+      onSearch(newQuery);
     },
-    [onSearch, setQuery]
+    [onSearch]
   );
 
   const Value = RenderValue || DefaultRenderValue;
@@ -76,8 +74,9 @@ export function Autocomplete<T>({
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
             <Combobox.Input
               placeholder={placeholder}
+              value={query}
               className="input-bordered input mt-2 w-full border-current bg-transparent py-2 pl-3 pr-10 text-sm leading-5 focus:ring-0"
-              displayValue={(result: SelectItem<T> | undefined) => result?.name ?? ''}
+              displayValue={(result: SelectItem<T> | undefined) => query || (result?.name ?? '')}
               onChange={(event) => handleSearch(event.target.value)}
             />
             {openDropdownButton && (
@@ -91,7 +90,7 @@ export function Autocomplete<T>({
             leave="transition ease-in duration-100"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
-            afterLeave={() => setQuery('')}
+            afterLeave={() => (query = '')}
           >
             <Combobox.Options className="absolute mt-1 max-h-60 w-full list-none overflow-auto rounded-md bg-base-100 py-1 pl-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {items.length === 0 && query !== '' ? (

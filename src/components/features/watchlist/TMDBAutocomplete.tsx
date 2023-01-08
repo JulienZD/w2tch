@@ -1,17 +1,15 @@
-import { CheckIcon } from '@heroicons/react/20/solid';
-import { useState } from 'react';
+import Image from 'next/image';
 import { Autocomplete, type SelectItem } from '~/components/input/Autocomplete';
 import { useTMDBSearch } from '~/hooks/useTMDBSearch';
-import Image from 'next/image';
 
 type TMDBAutocompleteProps = {
+  setQuery: (query: string) => void;
+  query: string;
   onSelect: (item: SelectItem) => void;
   excludeItems?: SelectItem[];
 };
 
-export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ onSelect, excludeItems }) => {
-  const [query, setQuery] = useState('');
-
+export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ query, setQuery, onSelect, excludeItems }) => {
   // TODO: Debounce this
   const data = useTMDBSearch(query);
 
@@ -24,6 +22,7 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ onSelect, ex
       onSelect={onSelect}
       items={filteredItems}
       onSearch={setQuery}
+      query={query}
       openDropdownButton={false}
       renderValue={({ item, renderOptions }) => {
         const { selected } = renderOptions;
