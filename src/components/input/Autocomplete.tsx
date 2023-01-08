@@ -73,6 +73,7 @@ export function Autocomplete<T>({
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
             <Combobox.Input
+              autoComplete="off"
               placeholder={placeholder}
               value={query}
               className="input-bordered input mt-2 w-full border-current bg-transparent py-2 pl-3 pr-10 text-sm leading-5 focus:ring-0"
