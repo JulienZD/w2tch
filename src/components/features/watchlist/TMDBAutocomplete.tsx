@@ -1,17 +1,20 @@
 import Image from 'next/image';
+import { useState } from 'react';
 import { Autocomplete, type SelectItem } from '~/components/input/Autocomplete';
+import { useDebounce } from '~/hooks/useDebounce';
 import { useTMDBSearch } from '~/hooks/useTMDBSearch';
 
 type TMDBAutocompleteProps = {
-  setQuery: (query: string) => void;
-  query: string;
+  initialQuery: string;
   onSelect: (item: SelectItem) => void;
   excludeItems?: SelectItem[];
 };
 
-export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ query, setQuery, onSelect, excludeItems }) => {
-  // TODO: Debounce this
-  const data = useTMDBSearch(query);
+export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery, onSelect, excludeItems }) => {
+  const [query, setQuery] = useState(initialQuery ?? '');
+  const debouncedQuery = useDebounce(query, 250);
+
+  const data = useTMDBSearch(debouncedQuery);
 
   const items = data.data ?? [];
 

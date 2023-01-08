@@ -41,8 +41,7 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
     <form onSubmit={addMovie}>
       <div className="flex items-end gap-x-2">
         <TMDBAutocomplete
-          query={query}
-          setQuery={setQuery}
+          initialQuery={query}
           onSelect={(item) => {
             form.setValue('id', String(item.id));
             form.setValue('title', item.name);
