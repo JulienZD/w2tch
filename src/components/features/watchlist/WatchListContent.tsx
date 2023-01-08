@@ -4,6 +4,7 @@ import type { Movie as PrismaMovie, MoviesOnWatchlists } from '@prisma/client';
 import { forwardRef, Fragment, memo, useCallback } from 'react';
 import { Rating } from '~/components/ui/Rating';
 import { SeenBadge } from '~/components/ui/SeenBadge';
+import { useBreakpoint } from '~/hooks/useTWBreakpoint';
 import { trpc } from '~/utils/trpc';
 
 type WatchlistItem = Omit<PrismaMovie, 'rating' | 'source'> &
@@ -164,6 +165,8 @@ WatchlistContextMenu.displayName = 'WatchlistContextMenu';
 export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watchlistId }) => {
   const editItem = trpc.watchlist.editItem.useMutation();
   const trpcUtil = trpc.useContext();
+
+  const { isMd } = useBreakpoint('md');
   const toggleMarkAsSeen = useCallback(
     async ({ id, newSeenOn }: { id: string; newSeenOn: Date | null }) => {
       await editItem.mutateAsync(
@@ -208,20 +211,34 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
           <Fragment key={item.id}>
             <tr className="table-row hover:bg-base-100/50">
               <td>{index + 1}</td>
-              <td>{item.name}</td>
-              <td>{item.rating !== undefined && <Rating score={item.rating} />}</td>
-              <td>
-                <div className="inline-flex h-full w-full items-center justify-end md:h-auto md:justify-between md:gap-x-4">
-                  <SeenBadge seenOn={item.seenOn} />
-                </div>
-              </td>
-              <td className="hidden md:table-cell">
-                <ToggleMarkAsSeen
-                  className="btn-ghost rounded-full p-1"
-                  toggled={!!item.seenOn}
-                  onClick={() => toggleMarkAsSeen({ id: item.id, newSeenOn: item.seenOn ? null : new Date() })}
-                />
-              </td>
+              {isMd ? (
+                <>
+                  <td>{item.name}</td>
+                  <td>{item.rating !== undefined && <Rating score={item.rating} />}</td>
+                  <td>
+                    <div className="inline-flex h-auto w-full items-center justify-between gap-x-4">
+                      <SeenBadge seenOn={item.seenOn} />
+                    </div>
+                  </td>
+                  <td>
+                    <ToggleMarkAsSeen
+                      className="btn-ghost rounded-full p-1"
+                      toggled={!!item.seenOn}
+                      onClick={() => toggleMarkAsSeen({ id: item.id, newSeenOn: item.seenOn ? null : new Date() })}
+                    />
+                  </td>
+                </>
+              ) : (
+                <td className="w-full">
+                  <div className="inline-flex w-full items-center justify-between gap-x-4">
+                    <div className="inline-flex flex-col">
+                      <span className="whitespace-pre-wrap">{item.name}</span>
+                      {item.rating !== undefined && <Rating score={item.rating} />}
+                    </div>
+                    <SeenBadge seenOn={item.seenOn} />
+                  </div>
+                </td>
+              )}
               <td className="not-prose">
                 <WatchlistContextMenu item={{ ...item, watchlistId }} />
               </td>
