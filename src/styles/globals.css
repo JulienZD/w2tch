@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .table.table-transparent td {
+    @apply bg-transparent border-transparent;
+  }
+}
+
 @layer utilities {
   .text-gradient {
     @apply inline-block bg-gradient-to-r bg-clip-text text-transparent;
