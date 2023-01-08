@@ -89,6 +89,7 @@ export const searchTMDBTvShows = async (query: string) => {
     image: result.poster_path,
     popularity: result.popularity,
     rating: result.vote_average,
+    overview: result.overview,
     type: WatchableType.TV_SHOW,
   }));
 };
@@ -113,6 +114,7 @@ export const searchTMDBMovies = async (query: string) => {
     image: result.poster_path,
     popularity: result.popularity,
     rating: result.vote_average,
+    overview: result.overview,
     type: WatchableType.MOVIE,
   }));
 };

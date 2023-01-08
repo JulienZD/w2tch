@@ -38,6 +38,7 @@
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.2",
     "@types/bcryptjs": "^2.4.2",
     "@types/humanize-duration": "^3.27.1",
     "@types/node": "^18.0.0",

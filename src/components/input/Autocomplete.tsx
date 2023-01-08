@@ -75,7 +75,6 @@ export function Autocomplete<T>({
             <Combobox.Input
               autoComplete="off"
               placeholder={placeholder}
-              value={query}
               className="input-bordered input mt-2 w-full border-current bg-transparent py-2 pl-3 pr-10 text-sm leading-5 focus:ring-0"
               displayValue={(result: SelectItem<T> | undefined) => query || (result?.name ?? '')}
               onChange={(event) => handleSearch(event.target.value)}
@@ -86,13 +85,7 @@ export function Autocomplete<T>({
               </Combobox.Button>
             )}
           </div>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-            afterLeave={() => (query = '')}
-          >
+          <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
             <Combobox.Options className="absolute mt-1 max-h-60 w-full list-none overflow-auto rounded-md bg-base-100 py-1 pl-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {items.length === 0 && query !== '' ? (
                 <div className="relative cursor-default select-none py-2 px-4 text-base-content">Nothing found.</div>

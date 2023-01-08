@@ -7,6 +7,10 @@
   .table.table-transparent td {
     @apply bg-transparent border-transparent;
   }
+
+  .badge {
+    @apply select-none
+  }
 }
 
 @layer utilities {
