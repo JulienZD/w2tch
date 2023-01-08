@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .text-gradient {
+    @apply inline-block bg-gradient-to-r bg-clip-text text-transparent;
+  }
+}
+
 html[data-theme='winter'] {
   @apply bg-gradient-to-tr from-transparent to-blue-300;
 }
