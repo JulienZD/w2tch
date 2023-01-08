@@ -4,7 +4,7 @@ import { protectedProcedure, router } from '../trpc';
 
 export const searchRouter = router({
   tmdb: router({
-    search: protectedProcedure.input(z.object({ query: z.string().min(2) })).query(async ({ input }) => {
+    search: protectedProcedure.input(z.object({ query: z.string().min(1) })).query(async ({ input }) => {
       const { movies, tvShows } = await searchTMDB(input.query);
 
       const result = [...movies, ...tvShows].sort((a, b) => b.popularity - a.popularity);
