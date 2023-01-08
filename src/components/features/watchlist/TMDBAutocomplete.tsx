@@ -8,7 +8,7 @@ import { useTMDBSearch } from '~/hooks/useTMDBSearch';
 type TMDBAutocompleteProps = {
   initialQuery: string;
   onSelect: (item: SelectItem) => void;
-  excludeItems?: SelectItem[];
+  excludeItems?: { externalId: string | number }[];
 };
 
 const SEARCH_THUMB_WIDTH = 36;
@@ -22,7 +22,9 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery
 
   const items = data.data ?? [];
 
-  const filteredItems = excludeItems ? items.filter((item) => !excludeItems?.find(({ id }) => id === item.id)) : items;
+  const filteredItems = excludeItems
+    ? items.filter((item) => !excludeItems?.find(({ externalId }) => externalId == item.id))
+    : items;
 
   return (
     <Autocomplete
