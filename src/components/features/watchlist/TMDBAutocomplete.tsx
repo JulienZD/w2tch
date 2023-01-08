@@ -5,10 +5,13 @@ import { Rating } from '~/components/ui/Rating';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useTMDBSearch } from '~/hooks/useTMDBSearch';
 import type { TMDBEntryType } from '~/server/data/tmdb/models';
+import type { RouterOutputs } from '~/utils/trpc';
+
+type SearchResult = RouterOutputs['search']['tmdb']['search'][number];
 
 type TMDBAutocompleteProps = {
   initialQuery: string;
-  onSelect: (item: SelectItem & { type: TMDBEntryType }) => void;
+  onSelect: (item: SelectItem & SearchResult) => void;
   excludeItems?: { externalId: string | number; type: TMDBEntryType }[];
 };
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import type { zWatchListAddEntry } from '~/server/data/watchlist/mutations';
-import { trpc } from '~/utils/trpc';
+import { type RouterOutputs, trpc } from '~/utils/trpc';
 import { TMDBAutocomplete } from './TMDBAutocomplete';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { Rating } from '~/components/ui/Rating';
@@ -12,6 +12,8 @@ import { Rating } from '~/components/ui/Rating';
 type AddItemProps = {
   watchlistId: string;
 };
+
+type SearchResult = RouterOutputs['search']['tmdb']['search'][number];
 
 const readableType = {
   MOVIE: 'Movie',
@@ -28,7 +30,7 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
   });
   const trpcUtil = trpc.useContext();
   const selectedId = form.watch('id');
-  const [selectedItem, setSelectedItem] = useState<z.infer<typeof zWatchListAddEntry> | null>(null);
+  const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
 
   const addItem = trpc.watchlist.addItem.useMutation({
     onSuccess: async () => {
@@ -53,8 +55,7 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
       <TMDBAutocomplete
         initialQuery={query}
         onSelect={(item) => {
-          // TODO: Don't type as any, properly type the callback
-          setSelectedItem(item as any);
+          setSelectedItem(item);
           form.setValue('id', String(item.id));
           form.setValue('type', item.type);
           setQuery(item.name);
