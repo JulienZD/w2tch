@@ -18,7 +18,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const bannerVisible = false; // accountRequired && !!accountExpiryDate;
 
   return (
-    <div className={`h-full ${accountRequired ? 'overflow-hidden' : ''}`}>
+    <div className="h-full">
       <AccountRequiredGuard />
 
       {bannerVisible && (
