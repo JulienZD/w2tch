@@ -7,7 +7,14 @@ export const searchRouter = router({
     search: protectedProcedure.input(z.object({ query: z.string().min(2) })).query(async ({ input }) => {
       const { movies, tvShows } = await searchTMDB(input.query);
 
-      return [...movies, ...tvShows].sort((a, b) => b.popularity - a.popularity);
+      const result = [...movies, ...tvShows].sort((a, b) => b.popularity - a.popularity);
+
+      const lowercaseQuery = input.query.toLowerCase();
+      // place exact matches at the top
+      const exactMatches = result.filter((item) => item.name.toLowerCase().startsWith(lowercaseQuery));
+      const nonExactMatches = result.filter((item) => !item.name.toLowerCase().startsWith(lowercaseQuery));
+
+      return [...exactMatches, ...nonExactMatches];
     }),
   }),
 });
