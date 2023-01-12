@@ -3,6 +3,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .table.table-transparent td {
+    @apply bg-transparent border-transparent;
+  }
+
+  .badge {
+    @apply select-none
+  }
+}
+
 @layer utilities {
   .text-gradient {
     @apply inline-block bg-gradient-to-r bg-clip-text text-transparent;
@@ -15,6 +25,11 @@ html[data-theme='winter'] {
 
 html[data-theme='night'] {
   @apply bg-gradient-to-tr from-transparent to-blue-900;
+}
+
+html {
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 #__next {

@@ -29,8 +29,8 @@ export const ThemeSwitcher: React.FC = () => {
         checked={theme === 'winter'}
         onChange={() => updateTheme(theme === 'winter' ? 'night' : 'winter')}
       />
-      <IconSun className="swap-on" size="28" />
-      <IconMoon className="swap-off" size="28" />
+      <IconSun className="swap-off" size="28" />
+      <IconMoon className="swap-on" size="28" />
     </label>
   );
 };

@@ -47,17 +47,17 @@ model Session {
 }
 
 model User {
-  id                    String                  @id @default(cuid())
-  name                  String?
-  email                 String?                 @unique
-  emailVerified         DateTime?
-  password              String
-  image                 String?
-  accounts              Account[]
-  sessions              Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
 
-  watchlists            Watchlist[]
-  watchersOnWatchlists  WatchersOnWatchlists[]
+  watchlists           Watchlist[]
+  watchersOnWatchlists WatchersOnWatchlists[]
 }
 
 model VerificationToken {
@@ -73,10 +73,10 @@ model Watchlist {
 
   name String
 
-  owner    User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId  String
-  watchers WatchersOnWatchlists[]
-  movies   MoviesOnWatchlists[]
+  owner      User                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    String
+  watchers   WatchersOnWatchlists[]
+  watchables WatchablesOnWatchlists[]
 
   openInvites WatchlistInvite[]
 
@@ -93,42 +93,62 @@ model WatchersOnWatchlists {
 
   joinedAt DateTime @default(now()) @ignore
 
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
+
   @@id([watcherId, watchListId])
 }
 
-enum ExternalMovieSource {
+enum ExternalWatchableSource {
   TMDB
 }
 
-model Movie {
-  id String @id @default(uuid())
-
-  name        String
-  rating      Decimal?              @db.Decimal(10, 2)
-  externalId  String
-  source      ExternalMovieSource
-  watchLists  MoviesOnWatchlists[]
-
-  @@unique([source, externalId])
+enum WatchableType {
+  MOVIE
+  TV_SHOW
 }
 
-model MoviesOnWatchlists {
-  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Restrict)
-  movieId String
+model Watchable {
+  id String @id @default(uuid())
+
+  name       String
+  rating     Decimal? @db.Decimal(10, 2)
+  externalId String
+
+  type       WatchableType
+  source     ExternalWatchableSource
+  watchLists WatchablesOnWatchlists[]
+
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
+
+  @@unique([source, externalId, type])
+  @@index([type])
+}
+
+model WatchablesOnWatchlists {
+  watchable   Watchable @relation(fields: [watchableId], references: [id], onDelete: Restrict)
+  watchableId String
 
   watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
   watchlistId String
 
   seenOn DateTime?
 
-  @@id([movieId, watchlistId])
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
+
+  @@id([watchableId, watchlistId])
 }
 
 model WatchlistInvite {
   watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
-  watchlistId String     @unique
+  watchlistId String    @unique
 
   inviteCode    String
   validUntil    DateTime?
   remainingUses Int       @default(-1)
+
+  createdAt DateTime @default(now()) @ignore
+  updatedAt DateTime @default(now()) @updatedAt @ignore
 }
