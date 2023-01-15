@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Rating } from '~/components/ui/Rating';
 import { Runtime } from '~/components/ui/Runtime';
 import { WatchableType } from '~/components/ui/WatchableType';
+import { thumbnail } from '~/utils/thumbnail';
 import { type RouterOutputs } from '~/utils/trpc';
 import { WatchlistContextMenu } from './WatchlistContextMenu';
 
@@ -19,7 +20,7 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
         <li key={item.id} className="not-prose inline-flex h-24 w-full items-center gap-x-4 text-sm">
           {item.image && (
             <Image
-              src={`https://image.tmdb.org/t/p/w185${item.image}`}
+              src={thumbnail(item.source, item.image, 'sm')}
               alt=""
               width={72}
               height={96}

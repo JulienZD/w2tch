@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { WatchableType as DBWatchableType } from '@prisma/client';
+import { ExternalWatchableSource, WatchableType as DBWatchableType } from '@prisma/client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
@@ -9,6 +9,7 @@ import { TMDBAutocomplete } from './TMDBAutocomplete';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { Rating } from '~/components/ui/Rating';
 import { WatchableType } from '~/components/ui/WatchableType';
+import { thumbnail } from '~/utils/thumbnail';
 
 type AddItemProps = {
   watchlistId: string;
@@ -81,7 +82,7 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
             {selectedItem.image && (
               <div className="relative h-32 w-24 flex-shrink-0 md:h-[256px] md:w-[171px]">
                 <Image
-                  src={`https://image.tmdb.org/t/p/w342${selectedItem.image}`}
+                  src={thumbnail(ExternalWatchableSource.TMDB, selectedItem.image, 'md')}
                   loading="eager"
                   alt=""
                   fill
