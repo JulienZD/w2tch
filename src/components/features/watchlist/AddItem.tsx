@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { WatchableType } from '@prisma/client';
+import { WatchableType as DBWatchableType } from '@prisma/client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
@@ -8,6 +8,7 @@ import { type RouterOutputs, trpc } from '~/utils/trpc';
 import { TMDBAutocomplete } from './TMDBAutocomplete';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { Rating } from '~/components/ui/Rating';
+import { WatchableType } from '~/components/ui/WatchableType';
 
 type AddItemProps = {
   watchlistId: string;
@@ -15,17 +16,12 @@ type AddItemProps = {
 
 type SearchResult = RouterOutputs['search']['tmdb']['search'][number];
 
-const readableType = {
-  MOVIE: 'Movie',
-  TV_SHOW: 'TV Show',
-} satisfies Record<WatchableType, string>;
-
 export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
   const [query, setQuery] = useState('');
   const form = useForm<z.infer<typeof zWatchListAddEntry>>({
     defaultValues: {
       id: '',
-      type: WatchableType.MOVIE,
+      type: DBWatchableType.MOVIE,
     },
   });
   const trpcUtil = trpc.useContext();
@@ -77,7 +73,7 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
               </button>
             </div>
             <div className="flex items-center gap-x-2">
-              <span className="badge-ghost badge">{readableType[selectedItem.type]}</span>
+              <WatchableType type={selectedItem.type} />
               {!!selectedItem.rating && selectedItem.rating > 0 && <Rating score={selectedItem.rating} />}
             </div>
           </div>
