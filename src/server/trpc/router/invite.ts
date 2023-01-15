@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zInvite, createInviteUrl } from '~/models/watchlistInvite';
-import { getWatchlistInviteByCode, getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
+import { getWatchlistInviteByCode } from '~/server/data/watchlist/invite/queries';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { protectedProcedure, publicProcedure, router } from '../trpc';
 
@@ -32,11 +32,6 @@ export const inviteRouter = router({
         ctx.prisma
       );
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
-
-      const existingInvite = await getWatchlistInviteById(input.watchlistId, ctx.prisma);
-      if (existingInvite) {
-        await ctx.prisma.watchlistInvite.delete({ where: { watchlistId: input.watchlistId } });
-      }
 
       const expiresAfterMs = input.expiresAfterHours * 60 * 60 * 1000;
 
@@ -87,19 +82,17 @@ export const inviteRouter = router({
     }
 
     await ctx.prisma.$transaction([
+      ctx.prisma.watchersOnWatchlists.create({
+        data: {
+          watcherId: ctx.session.user.id,
+          watchlistId: invite.watchlistId,
+        },
+      }),
       ctx.prisma.watchlistInvite.update({
         where: { inviteCode: input.code },
         data: {
-          uses: invite.uses + 1,
-        },
-      }),
-      ctx.prisma.user.update({
-        where: { id: ctx.session.user.id },
-        data: {
-          watchlists: {
-            connect: {
-              id: invite.watchlistId,
-            },
+          uses: {
+            increment: 1,
           },
         },
       }),

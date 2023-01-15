@@ -130,12 +130,6 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                   </div>
                 </form>
 
-                {existingInvite.data && (
-                  <div className="flex w-full flex-col text-sm">
-                    <p>An invite exists for this watchlist.</p>
-                    <p>Clicking Create will overwrite it</p>
-                  </div>
-                )}
                 <div className="mt-6 flex justify-between">
                   <button className="btn-sm btn" onClick={modal.hide}>
                     Cancel

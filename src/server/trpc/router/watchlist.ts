@@ -2,13 +2,13 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createWatchlistSchema } from '~/models/watchlist';
-import { createInviteUrl, zInvite } from '~/models/watchlistInvite';
+import { createInviteUrl } from '~/models/watchlistInvite';
 import { findTMDBEntry } from '~/server/data/tmdb';
-import { getWatchlistInviteByCode, getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
+import { getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
 import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
-import { protectedProcedure, publicProcedure, router } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 
 export const watchlistRouter = router({
   all: protectedProcedure.query(({ ctx }) => getWatchlistsForUser(ctx.session.user.id, ctx.prisma)),

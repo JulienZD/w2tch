@@ -14,11 +14,18 @@ export const enhanceWatchlistWatchable = ({
 export const getWatchlistsForUser = async (userId: string, prisma: PrismaClient) => {
   const watchlists = await prisma.watchlist.findMany({
     where: {
-      watchers: {
-        some: {
-          watcherId: userId,
+      OR: [
+        {
+          ownerId: userId,
         },
-      },
+        {
+          watchers: {
+            some: {
+              watcherId: userId,
+            },
+          },
+        },
+      ],
     },
     include: {
       _count: {
