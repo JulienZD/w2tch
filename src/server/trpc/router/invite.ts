@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { zInvite, createInviteUrl } from '~/models/watchlistInvite';
 import { getWatchlistInviteByCode, getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
-import { getWatchlistById } from '~/server/data/watchlist/queries';
+import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { protectedProcedure, publicProcedure, router } from '../trpc';
 
 export const inviteRouter = router({
@@ -68,4 +68,43 @@ export const inviteRouter = router({
         }
       }
     }),
+  join: protectedProcedure.input(z.object({ code: z.string() })).mutation(async ({ ctx, input }) => {
+    const invite = await ctx.prisma.watchlistInvite.findFirst({ where: { inviteCode: input.code } });
+
+    if (!invite) throw new TRPCError({ code: 'NOT_FOUND', message: 'Invite not found' });
+
+    if (invite.validUntil && invite.validUntil < new Date()) {
+      throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Invite has expired' });
+    }
+
+    if (invite.maxUses !== null && invite.maxUses <= invite.uses) {
+      throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Invite has reached max uses' });
+    }
+
+    const usersWatchlists = await getWatchlistsForUser(ctx.session.user.id, ctx.prisma);
+    if (usersWatchlists.some((w) => w.id === invite.watchlistId)) {
+      throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Already a member of this watchlist' });
+    }
+
+    await ctx.prisma.$transaction([
+      ctx.prisma.watchlistInvite.update({
+        where: { inviteCode: input.code },
+        data: {
+          uses: invite.uses + 1,
+        },
+      }),
+      ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: {
+          watchlists: {
+            connect: {
+              id: invite.watchlistId,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return { watchlistId: invite.watchlistId };
+  }),
 });

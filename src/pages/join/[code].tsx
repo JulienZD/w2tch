@@ -1,19 +1,51 @@
 import type { NextPage, InferGetServerSidePropsType, GetServerSideProps } from 'next';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import type { WithSEOProps } from '~/types/ssr';
 import { createSSGHelper } from '~/utils/ssg';
+import { trpc } from '~/utils/trpc';
 
 const WatchlistInviteByCode: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
   code,
   invitee,
   watchlistName,
 }) => {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const join = trpc.invite.join.useMutation({
+    onSuccess: ({ watchlistId }) => {
+      return router.push(`/watchlist/${watchlistId}`);
+    },
+  });
+
   return (
-    <>
-      <h1>Invite by code</h1>
-      <p>Code: {code}</p>
-      <p>Watchlist: {watchlistName}</p>
-      <p>Invitee: {invitee}</p>
-    </>
+    <div className="prose mx-0 grid h-screen max-w-none place-content-center px-0">
+      <h1>You have been invited!</h1>
+      <p>
+        {invitee} invited you to join &apos;{watchlistName}&apos;
+      </p>
+      {join.error && <p className="text-red-500">Failed to accept invite: {join.error.message}</p>}
+      {session ? (
+        <button className={`btn-primary btn ${join.isLoading ? 'loading' : ''}`} onClick={() => join.mutate({ code })}>
+          Accept invite
+        </button>
+      ) : (
+        <p>
+          <Link
+            href={{
+              pathname: '/login',
+              query: {
+                returnUrl: router.asPath,
+              },
+            }}
+          >
+            Sign in
+          </Link>{' '}
+          to accept the invite
+        </p>
+      )}
+    </div>
   );
 };
 
