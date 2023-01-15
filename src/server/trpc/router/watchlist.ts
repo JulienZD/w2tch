@@ -4,11 +4,11 @@ import { z } from 'zod';
 import { createWatchlistSchema } from '~/models/watchlist';
 import { createInviteUrl, zInvite } from '~/models/watchlistInvite';
 import { findTMDBEntry } from '~/server/data/tmdb';
-import { getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
+import { getWatchlistInviteByCode, getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
 import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
-import { protectedProcedure, router } from '../trpc';
+import { protectedProcedure, publicProcedure, router } from '../trpc';
 
 export const watchlistRouter = router({
   all: protectedProcedure.query(({ ctx }) => getWatchlistsForUser(ctx.session.user.id, ctx.prisma)),
@@ -93,6 +93,16 @@ export const watchlistRouter = router({
       remainingUses: existingInvite.remainingUses,
       validUntil: existingInvite.validUntil,
       hasUnlimitedUsages: existingInvite.remainingUses === null,
+    };
+  }),
+  inviteByCode: publicProcedure.input(z.object({ code: z.string() })).query(async ({ ctx, input }) => {
+    const invite = await getWatchlistInviteByCode(input.code, ctx.prisma);
+    if (!invite) return null;
+
+    return {
+      watchlistName: invite.watchlist.name,
+      invitee: invite.watchlist.owner.name as string, // This is never not set
+      watchlistId: invite.watchlistId,
     };
   }),
   createInvite: protectedProcedure
