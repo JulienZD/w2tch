@@ -38,7 +38,16 @@ export const getWatchlistsForUser = async (userId: string, prisma: PrismaClient)
   }));
 };
 
-export const getWatchlistById = async (id: string, userId: string, prisma: PrismaClient) => {
+type GetWatchlistByIdArgs = {
+  id: string;
+  userId: string;
+  ownerOnly?: boolean;
+};
+
+export const getWatchlistById = async (
+  { id, userId, ownerOnly = false }: GetWatchlistByIdArgs,
+  prisma: PrismaClient
+) => {
   const watchlist = await prisma.watchlist.findFirst({
     include: {
       owner: {
@@ -71,18 +80,22 @@ export const getWatchlistById = async (id: string, userId: string, prisma: Prism
     },
     where: {
       id,
-      OR: [
-        {
-          watchers: {
-            some: {
-              watcherId: userId,
-            },
-          },
-        },
-        {
-          ownerId: userId,
-        },
-      ],
+      ...(ownerOnly
+        ? { ownerId: userId }
+        : {
+            OR: [
+              {
+                watchers: {
+                  some: {
+                    watcherId: userId,
+                  },
+                },
+              },
+              {
+                ownerId: userId,
+              },
+            ],
+          }),
     },
   });
 
