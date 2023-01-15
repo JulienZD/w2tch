@@ -8,6 +8,8 @@ import '../styles/globals.css';
 import { Layout } from '~/components/ui/Layout';
 import { ThemeContextProvider } from '~/contexts/ThemeProvider';
 import NiceModal from '@ebay/nice-modal-react';
+import { SEO } from '~/components/common/SEO';
+import { hasSSRSeoProps } from '~/utils/seo';
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
@@ -15,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
       <ThemeContextProvider>
         <NiceModal.Provider>
           <Layout>
+            {hasSSRSeoProps(pageProps) && <SEO {...pageProps.seo} />}
             <Component {...pageProps} />
           </Layout>
         </NiceModal.Provider>
