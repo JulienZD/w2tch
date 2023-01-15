@@ -176,7 +176,7 @@ export const zTMDBTvShowDetailsResult = z.object({
     .array(),
   seasons: z
     .object({
-      air_date: z.string(),
+      air_date: z.string().nullable(),
       episode_count: z.number(),
       id: z.number(),
       name: z.string(),

@@ -115,6 +115,8 @@ model Watchable {
   rating     Decimal? @db.Decimal(10, 2)
   externalId String
 
+  image      String?
+  runtime    Int?
   type       WatchableType
   source     ExternalWatchableSource
   watchLists WatchablesOnWatchlists[]

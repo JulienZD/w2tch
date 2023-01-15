@@ -13,7 +13,7 @@ const Dashboard: NextPage = () => {
       <SEO />
       <div className="prose">
         <h1>Your watchlists</h1>
-        <p>These are all the watch groups you own or are a member of.</p>
+        <p>These are all the watchlists you own or are a member of.</p>
         <a className="btn-primary btn-sm btn mb-4" href="/new">
           Create new
         </a>

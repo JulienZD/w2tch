@@ -11,6 +11,8 @@ export const zWatchListAddEntry = z.object({
 type WatchListAddEntry = z.infer<typeof zWatchListAddEntry> & {
   rating: number;
   name: string;
+  image: string | null;
+  runtime: number;
 };
 
 export const addEntryToWatchlist = async (watchlistId: string, entry: WatchListAddEntry, prisma: PrismaClient) => {
@@ -47,6 +49,8 @@ export const addEntryToWatchlist = async (watchlistId: string, entry: WatchListA
                 rating: entry.rating.toPrecision(2),
                 externalId: entry.id,
                 type: entry.type,
+                image: entry.image,
+                runtime: entry.runtime,
                 source: 'TMDB',
               },
             },
