@@ -27,7 +27,7 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
                 width: 'auto',
                 height: 'auto',
               }}
-              className={`max-h-24 transition ${item.seenOn ? 'grayscale' : ''}`}
+              className={`max-h-24 transition ${item.seenOn ? 'grayscale' : ''} rounded`}
             />
           )}
           <div className={`flex h-full w-full items-center justify-between gap-y-2 ${!item.image ? 'pl-[76px]' : ''} `}>
