@@ -24,8 +24,6 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
     resolver: zodResolver(zInvite),
   });
 
-  console.log(form.formState.errors);
-
   const hasUnlimitedUses = form.watch('hasUnlimitedUsages');
 
   const handleInvite = form.handleSubmit(async (data) => {
