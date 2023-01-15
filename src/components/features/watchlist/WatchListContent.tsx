@@ -32,7 +32,9 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
           )}
           <div className={`flex h-full w-full items-center justify-between gap-y-2 ${!item.image ? 'pl-[76px]' : ''} `}>
             <div className="flex h-full grow flex-col gap-y-1">
-              <span className={`whitespace-pre-wrap ${item.seenOn ? 'line-through' : ''}`}>{item.name}</span>
+              <span className={`whitespace-pre-wrap ${item.seenOn ? 'line-through' : ''} font-medium`}>
+                {item.name}
+              </span>
               <WatchableType type={item.type} />
               <div className="flex items-center gap-x-2">
                 {item.runtime && <Runtime minutes={item.runtime} />}
