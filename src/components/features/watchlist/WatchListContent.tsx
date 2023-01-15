@@ -1,16 +1,14 @@
 import { Menu, Transition } from '@headlessui/react';
 import { EllipsisVerticalIcon, EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/react/20/solid';
-import type { Watchable as PrismaWatchable, WatchablesOnWatchlists } from '@prisma/client';
+import type { WatchablesOnWatchlists } from '@prisma/client';
+import Image from 'next/image';
 import { forwardRef, Fragment, memo, useCallback } from 'react';
 import { Rating } from '~/components/ui/Rating';
 import { SeenBadge } from '~/components/ui/SeenBadge';
 import { useBreakpoint } from '~/hooks/useTWBreakpoint';
-import { trpc } from '~/utils/trpc';
+import { trpc, type RouterOutputs } from '~/utils/trpc';
 
-type WatchlistItem = Omit<PrismaWatchable, 'rating' | 'source'> &
-  Pick<WatchablesOnWatchlists, 'seenOn'> & {
-    rating?: number;
-  };
+type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables'][number];
 
 interface WatchlistContentProps {
   items: WatchlistItem[];

@@ -56,6 +56,7 @@ export const getWatchlistById = async (id: string, userId: string, prisma: Prism
               rating: true,
               type: true,
               source: true,
+              image: true,
             },
           },
         },
