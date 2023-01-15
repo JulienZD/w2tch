@@ -12,21 +12,21 @@ const Home: NextPage = () => {
         <div className="hero-content">
           <div className="max-w-xs sm:max-w-xl">
             <h1 className="font-bolder text-3xl sm:text-5xl">
-              Create <span className="text-gradient from-indigo-300 to-red-400">Movie Watchlists</span> with ease
+              Create <span className="text-gradient from-indigo-300 to-red-400">Watchlists</span> with ease
             </h1>
             <div className="py-6">
               {session ? (
                 <p>Welcome back, {session.user?.name}!</p>
               ) : (
                 <>
-                  <p>Create, manage, and share movie watch lists with your friends.</p>
+                  <p>Create, manage, and share watchlists with your friends.</p>
                   <p className="mt-2">No account required.</p>
                 </>
               )}
             </div>
             {session ? (
               <a className="btn-primary btn mt-2" href="/dashboard">
-                To my watch lists
+                My watchlists
               </a>
             ) : (
               <>
