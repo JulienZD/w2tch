@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fieldReference"]
 }
 
 datasource db {
@@ -147,9 +148,10 @@ model WatchlistInvite {
   watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
   watchlistId String    @unique
 
-  inviteCode    String @unique
-  validUntil    DateTime?
-  remainingUses Int?
+  inviteCode String    @unique
+  validUntil DateTime?
+  maxUses    Int?
+  uses       Int       @default(0)
 
   createdAt DateTime @default(now()) @ignore
   updatedAt DateTime @default(now()) @updatedAt @ignore

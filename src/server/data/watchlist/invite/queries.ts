@@ -1,11 +1,15 @@
 import type { PrismaClient } from '@prisma/client';
 
+const defaultWhere = (prisma: PrismaClient) => ({
+  validUntil: { gte: new Date() },
+  OR: [{ maxUses: null }, { uses: { lt: prisma.watchlistInvite.fields.maxUses } }],
+});
+
 export const getWatchlistInviteById = async (watchlistId: string, prisma: PrismaClient) => {
   return prisma.watchlistInvite.findFirst({
     where: {
+      ...defaultWhere(prisma),
       watchlistId,
-      validUntil: { gte: new Date() },
-      OR: [{ remainingUses: { gt: 0 } }, { remainingUses: { equals: null } }],
     },
   });
 };
@@ -25,9 +29,8 @@ export const getWatchlistInviteByCode = async (inviteCode: string, prisma: Prism
       },
     },
     where: {
+      ...defaultWhere(prisma),
       inviteCode,
-      validUntil: { gte: new Date() },
-      OR: [{ remainingUses: { gt: 0 } }, { remainingUses: { equals: null } }],
     },
   });
 };

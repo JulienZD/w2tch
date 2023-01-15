@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlistId }) => {
   const modal = useModal();
-  const invite = trpc.watchlist.createInvite.useMutation();
+  const invite = trpc.invite.create.useMutation();
   const existingInvite = trpc.watchlist.inviteById.useQuery({ watchlistId });
 
   const [inviteCode, setInviteCode] = useState('');
@@ -19,7 +19,7 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
     defaultValues: {
       expiresAfterHours: expiryOptionsInHours[0],
       hasUnlimitedUsages: true,
-      maxUsages: 5,
+      maxUses: 5,
     },
     resolver: zodResolver(zInvite),
   });
@@ -32,7 +32,7 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
     try {
       const result = await invite.mutateAsync({
         ...data,
-        maxUsages: data.hasUnlimitedUsages ? null : data.maxUsages,
+        maxUses: data.hasUnlimitedUsages ? null : data.maxUses,
         watchlistId,
       });
       if (!result) {
@@ -116,11 +116,11 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
 
                     {!hasUnlimitedUses && (
                       <div className="form-control max-w-[7rem] shrink sm:max-w-[8rem]">
-                        <label className="label-text" htmlFor="maxUsages">
+                        <label className="label-text" htmlFor="maxUses">
                           Maximum uses
                         </label>
                         <input
-                          {...form.register('maxUsages')}
+                          {...form.register('maxUses')}
                           disabled={formDisabled}
                           className="input-bordered input"
                           type="number"

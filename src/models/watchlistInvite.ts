@@ -8,7 +8,7 @@ export const zInvite = z.object({
     .preprocess(Number, z.number())
     .refine((n) => (expiryOptionsInHours as readonly number[]).includes(n)),
   hasUnlimitedUsages: z.boolean(),
-  maxUsages: z.preprocess(Number, z.number().int().positive()).or(z.null()),
+  maxUses: z.preprocess(Number, z.number().int().positive()).or(z.null()),
 });
 
 type ExpirationOption = {

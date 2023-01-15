@@ -23,15 +23,15 @@ export const getServerSideProps: GetServerSideProps<
   WithSEOProps<{ code: string; watchlistName: string; invitee: string }>
 > = async (ctx) => {
   const { ssg } = await createSSGHelper(ctx);
-  const inviteCode = ctx.params?.code as string | undefined;
+  const inviteCode = ctx.params?.code;
 
-  if (!inviteCode) {
+  if (typeof inviteCode !== 'string') {
     return {
       notFound: true,
     };
   }
 
-  const invite = await ssg.watchlist.inviteByCode.fetch({ code: inviteCode });
+  const invite = await ssg.invite.byCode.fetch({ code: inviteCode });
   if (!invite) {
     return {
       notFound: true,
