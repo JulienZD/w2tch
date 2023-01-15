@@ -116,6 +116,7 @@ model Watchable {
   externalId String
 
   image      String?
+  runtime    Int?
   type       WatchableType
   source     ExternalWatchableSource
   watchLists WatchablesOnWatchlists[]

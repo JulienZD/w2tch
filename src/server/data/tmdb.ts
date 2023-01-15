@@ -126,6 +126,7 @@ const mapMovieToEntry = (movie: z.infer<typeof zTMDBMovieDetailsResult>) => {
     image: movie.poster_path,
     popularity: movie.popularity,
     rating: movie.vote_average,
+    runtime: movie.runtime,
   };
 };
 
@@ -136,5 +137,6 @@ const mapTvShowToEntry = (tvShow: z.infer<typeof zTMDBTvShowDetailsResult>) => {
     image: tvShow.poster_path,
     popularity: tvShow.popularity,
     rating: tvShow.vote_average,
+    runtime: tvShow.episode_run_time[0],
   };
 };
