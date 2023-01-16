@@ -81,7 +81,7 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                       Expires after
                     </label>
                     <select
-                      {...form.register('expiresAfterHours')}
+                      {...form.register('expiresAfterHours', { valueAsNumber: true })}
                       disabled={formDisabled}
                       className="input select-bordered select"
                       id="expiresAfterHours"
@@ -118,10 +118,11 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                           Maximum uses
                         </label>
                         <input
-                          {...form.register('maxUses')}
+                          {...form.register('maxUses', { valueAsNumber: true })}
                           disabled={formDisabled}
                           className="input-bordered input"
                           type="number"
+                          min="1"
                         />
                       </div>
                     )}

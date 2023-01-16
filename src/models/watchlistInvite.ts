@@ -4,11 +4,9 @@ import { getBaseUrl } from '~/utils/trpc';
 export const expiryOptionsInHours = [1, 6, 24, 168] as const;
 
 export const zInvite = z.object({
-  expiresAfterHours: z
-    .preprocess(Number, z.number())
-    .refine((n) => (expiryOptionsInHours as readonly number[]).includes(n)),
+  expiresAfterHours: z.number().refine((n) => (expiryOptionsInHours as readonly number[]).includes(n)),
   hasUnlimitedUsages: z.boolean(),
-  maxUses: z.preprocess(Number, z.number().int().positive()).or(z.null()),
+  maxUses: z.number().int().positive().or(z.null()),
 });
 
 type ExpirationOption = {
