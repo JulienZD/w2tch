@@ -22,6 +22,8 @@ const Dashboard: NextPage = () => {
             watchlists.map((watchlist) => (
               <div
                 key={watchlist.id}
+                // ESlint is disabled because prettier kept messing up the class ordering, leading to false positives
+                // eslint-disable-next-line prettier/prettier
                 className="card-compact card glass w-full cursor-pointer md:w-64"
                 onClick={() => router.push(`/watchlist/${watchlist.id}`)}
               >
