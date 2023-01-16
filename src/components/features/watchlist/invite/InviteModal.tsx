@@ -7,13 +7,15 @@ import type { z } from 'zod';
 import { ClipboardCopy } from '~/components/util/ClipboardCopy';
 import { expiryOptions, expiryOptionsInHours, zInvite } from '~/models/watchlistInvite';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { InvitesTable } from './InvitesTable';
 
 export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlistId }) => {
   const modal = useModal();
+  const trpcUtil = trpc.useContext();
   const invite = trpc.invite.create.useMutation();
-  const existingInvite = trpc.watchlist.inviteById.useQuery({ watchlistId });
+  const existingInvites = trpc.watchlist.invitesById.useQuery({ watchlistId });
 
-  const [inviteCode, setInviteCode] = useState('');
+  const [inviteLink, setInviteLink] = useState('');
 
   const form = useForm<z.infer<typeof zInvite>>({
     defaultValues: {
@@ -36,14 +38,13 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
       if (!result) {
         return;
       }
-      setInviteCode(result.inviteCode);
+      await trpcUtil.watchlist.invitesById.invalidate({ watchlistId });
+      setInviteLink(result.inviteCode);
     } catch (error) {
       // TODO: idk
       console.error(error);
     }
   });
-
-  const formDisabled = !!inviteCode;
 
   return (
     <Transition appear show={modal.visible} as={Fragment}>
@@ -82,7 +83,6 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                     </label>
                     <select
                       {...form.register('expiresAfterHours', { valueAsNumber: true })}
-                      disabled={formDisabled}
                       className="input select-bordered select"
                       id="expiresAfterHours"
                       name="expiresAfterHours"
@@ -106,7 +106,6 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                           {...form.register('hasUnlimitedUsages')}
                           id="hasUnlimitedUses"
                           type="checkbox"
-                          disabled={formDisabled}
                           className="checkbox-primary checkbox"
                         />
                       </label>
@@ -119,7 +118,6 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                         </label>
                         <input
                           {...form.register('maxUses', { valueAsNumber: true })}
-                          disabled={formDisabled}
                           className="input-bordered input"
                           type="number"
                           min="1"
@@ -133,14 +131,18 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                   <button className="btn-sm btn" onClick={modal.hide}>
                     Cancel
                   </button>
-                  <button className="btn-primary btn-sm btn" disabled={formDisabled} onClick={handleInvite}>
+                  <button className="btn-primary btn-sm btn" disabled={invite.isLoading} onClick={handleInvite}>
                     Create
                   </button>
                 </div>
                 <div className="mt-2 w-full">
-                  <div className="mb-2 text-sm text-base-content">Invite code:</div>
-                  <ClipboardCopy text={inviteCode} />
+                  <div className="mb-2 text-sm text-base-content">Invite link:</div>
+                  <ClipboardCopy text={inviteLink} />
                 </div>
+
+                {existingInvites.data && existingInvites.data.length > 0 && (
+                  <InvitesTable rows={3} invites={existingInvites.data} />
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>

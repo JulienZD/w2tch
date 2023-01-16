@@ -5,11 +5,14 @@ const defaultWhere = (prisma: PrismaClient) => ({
   OR: [{ maxUses: null }, { uses: { lt: prisma.watchlistInvite.fields.maxUses } }],
 });
 
-export const getWatchlistInviteById = async (watchlistId: string, prisma: PrismaClient) => {
-  return prisma.watchlistInvite.findFirst({
+export const getWatchlistInvitesById = async (watchlistId: string, prisma: PrismaClient) => {
+  return prisma.watchlistInvite.findMany({
     where: {
       ...defaultWhere(prisma),
       watchlistId,
+    },
+    orderBy: {
+      createdAt: 'desc',
     },
   });
 };

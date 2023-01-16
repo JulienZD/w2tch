@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { createWatchlistSchema } from '~/models/watchlist';
 import { createInviteUrl } from '~/models/watchlistInvite';
 import { findTMDBEntry } from '~/server/data/tmdb';
-import { getWatchlistInviteById } from '~/server/data/watchlist/invite/queries';
+import { getWatchlistInvitesById } from '~/server/data/watchlist/invite/queries';
 import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
@@ -81,18 +81,23 @@ export const watchlistRouter = router({
         },
       });
     }),
-  inviteById: protectedProcedure.input(z.object({ watchlistId: z.string() })).query(async ({ ctx, input }) => {
-    const watchlist = await getWatchlistById({ id: input.watchlistId, userId: ctx.session.user.id }, ctx.prisma);
+  invitesById: protectedProcedure.input(z.object({ watchlistId: z.string() })).query(async ({ ctx, input }) => {
+    const watchlist = await getWatchlistById(
+      { id: input.watchlistId, userId: ctx.session.user.id, ownerOnly: true },
+      ctx.prisma
+    );
     if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
-    const existingInvite = await getWatchlistInviteById(input.watchlistId, ctx.prisma);
-    if (!existingInvite) return null;
+    const existingInvites = await getWatchlistInvitesById(input.watchlistId, ctx.prisma);
+    if (!existingInvites?.length) return null;
 
-    return {
-      url: createInviteUrl(existingInvite.inviteCode),
-      ...(existingInvite.maxUses !== null ? { remainingUses: existingInvite.maxUses - existingInvite.uses } : {}),
-      validUntil: existingInvite.validUntil,
-      hasUnlimitedUsages: existingInvite.maxUses === null,
-    };
+    return existingInvites.map((invite) => ({
+      maxUses: invite.maxUses,
+      uses: invite.uses,
+      code: invite.inviteCode,
+      url: createInviteUrl(invite.inviteCode),
+      validUntil: invite.validUntil,
+      hasUnlimitedUsages: invite.maxUses === null,
+    }));
   }),
 });
