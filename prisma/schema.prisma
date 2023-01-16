@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fieldReference"]
 }
 
 datasource db {
@@ -88,15 +89,15 @@ model WatchersOnWatchlists {
   watcher   User   @relation(fields: [watcherId], references: [id], onDelete: Cascade)
   watcherId String
 
-  watchList   Watchlist @relation(fields: [watchListId], references: [id], onDelete: Cascade)
-  watchListId String
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  watchlistId String
 
   joinedAt DateTime @default(now()) @ignore
 
   createdAt DateTime @default(now()) @ignore
   updatedAt DateTime @default(now()) @updatedAt @ignore
 
-  @@id([watcherId, watchListId])
+  @@id([watcherId, watchlistId])
 }
 
 enum ExternalWatchableSource {
@@ -145,12 +146,13 @@ model WatchablesOnWatchlists {
 
 model WatchlistInvite {
   watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
-  watchlistId String    @unique
+  watchlistId String
 
-  inviteCode    String
-  validUntil    DateTime?
-  remainingUses Int       @default(-1)
+  inviteCode String    @unique
+  validUntil DateTime?
+  maxUses    Int?
+  uses       Int       @default(0)
 
-  createdAt DateTime @default(now()) @ignore
+  createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt @ignore
 }

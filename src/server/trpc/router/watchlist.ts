@@ -2,7 +2,9 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createWatchlistSchema } from '~/models/watchlist';
+import { createInviteUrl } from '~/models/watchlistInvite';
 import { findTMDBEntry } from '~/server/data/tmdb';
+import { getWatchlistInvitesById } from '~/server/data/watchlist/invite/queries';
 import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
@@ -12,7 +14,7 @@ export const watchlistRouter = router({
   all: protectedProcedure.query(({ ctx }) => getWatchlistsForUser(ctx.session.user.id, ctx.prisma)),
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => getWatchlistById(input.id, ctx.session.user.id, ctx.prisma)),
+    .query(async ({ ctx, input }) => getWatchlistById({ id: input.id, userId: ctx.session.user.id }, ctx.prisma)),
   create: protectedProcedure.input(createWatchlistSchema).mutation(async ({ input, ctx }) => {
     const userId = ctx.session.user.id;
 
@@ -29,7 +31,7 @@ export const watchlistRouter = router({
   addItem: protectedProcedure
     .input(zWatchListAddEntry.extend({ watchlistId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const watchlist = await getWatchlistById(input.watchlistId, ctx.session.user.id, ctx.prisma);
+      const watchlist = await getWatchlistById({ id: input.watchlistId, userId: ctx.session.user.id }, ctx.prisma);
 
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
@@ -49,7 +51,7 @@ export const watchlistRouter = router({
   editItem: protectedProcedure
     .input(z.object({ id: z.string(), watchlistId: z.string(), seenOn: z.date().or(z.null()) }))
     .mutation(async ({ input, ctx }) => {
-      const watchlist = await getWatchlistById(input.watchlistId, ctx.session.user.id, ctx.prisma);
+      const watchlist = await getWatchlistById({ id: input.watchlistId, userId: ctx.session.user.id }, ctx.prisma);
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
       await ctx.prisma.watchablesOnWatchlists.update({
@@ -67,7 +69,7 @@ export const watchlistRouter = router({
   removeItem: protectedProcedure
     .input(z.object({ id: z.string(), watchlistId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const watchlist = await getWatchlistById(input.watchlistId, ctx.session.user.id, ctx.prisma);
+      const watchlist = await getWatchlistById({ id: input.watchlistId, userId: ctx.session.user.id }, ctx.prisma);
       if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
       await ctx.prisma.watchablesOnWatchlists.delete({
@@ -79,4 +81,23 @@ export const watchlistRouter = router({
         },
       });
     }),
+  invitesById: protectedProcedure.input(z.object({ watchlistId: z.string() })).query(async ({ ctx, input }) => {
+    const watchlist = await getWatchlistById(
+      { id: input.watchlistId, userId: ctx.session.user.id, ownerOnly: true },
+      ctx.prisma
+    );
+    if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
+
+    const existingInvites = await getWatchlistInvitesById(input.watchlistId, ctx.prisma);
+    if (!existingInvites?.length) return null;
+
+    return existingInvites.map((invite) => ({
+      maxUses: invite.maxUses,
+      uses: invite.uses,
+      code: invite.inviteCode,
+      url: createInviteUrl(invite.inviteCode),
+      validUntil: invite.validUntil,
+      hasUnlimitedUsages: invite.maxUses === null,
+    }));
+  }),
 });

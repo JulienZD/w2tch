@@ -5,16 +5,17 @@ import { TemporaryAccountAlert } from '../auth/TemporaryAccountAlert';
 import { AccountRequiredGuard } from './AccountRequiredGuard';
 import { Header } from './Header';
 
-const isSpecialPage = (path: string) => ['/', '/login', '/signup'].includes(path);
+const isCustomStyledPage = (route: string) => ['/', '/join/[code]'].includes(route);
+const isSpecialPage = (route: string) => ['/', '/login', '/signup'].includes(route);
 
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
-  const { asPath: path } = useRouter();
-  const accountRequired = !isSpecialPage(path);
-  const isHomePage = path === '/';
+  const { route } = useRouter();
+  const accountRequired = !isSpecialPage(route);
+  const isCustomPage = isCustomStyledPage(route);
   const { status } = useSession();
 
   // TODO: Store and retrieve account expiry date
-  const accountExpiryDate = new Date(2022, 11, 31); /*data?.user?.temporaryAccountExpiresOn*/
+  const accountExpiryDate = new Date(2022, 11, 31); /* data?.user?.temporaryAccountExpiresOn */
   const bannerVisible = false; // accountRequired && !!accountExpiryDate;
 
   return (
@@ -28,16 +29,14 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
       )}
 
       <div
-        className={`container relative h-full px-2 md:px-0 ${isHomePage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}
+        className={`container relative h-full px-2 md:px-0 ${isCustomPage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}
       >
-        <Header visible={status === 'authenticated' && !isHomePage} />
+        <Header visible={status === 'authenticated' && !isCustomPage} />
 
-        <main className={`${isHomePage ? '' : 'h-full pt-4 md:pt-32'} ${bannerVisible ? 'pb-20' : ''}`}>
+        <main className={`${isCustomPage ? '' : 'h-full pt-4 md:pt-32'} ${bannerVisible ? 'pb-20' : ''}`}>
           {children}
         </main>
       </div>
     </div>
-
-    // Modal portal
   );
 };
