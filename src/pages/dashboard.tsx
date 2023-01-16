@@ -12,8 +12,8 @@ const Dashboard: NextPage = () => {
     <>
       <SEO />
       <div className="prose">
-        <h1>Your watchlists</h1>
-        <p>These are all the watchlists you own or are a member of.</p>
+        <h1>My watchlists</h1>
+        <p>All the watchlists you own or are a member of.</p>
         <a className="btn-primary btn-sm btn mb-4" href="/new">
           Create new
         </a>
@@ -35,6 +35,9 @@ const Dashboard: NextPage = () => {
                 </div>
               </div>
             ))}
+          {watchlists?.length === 0 && (
+            <div className="w-full text-center">You don&apos;t have any watchlists yet.</div>
+          )}
         </div>
       </div>
     </>
