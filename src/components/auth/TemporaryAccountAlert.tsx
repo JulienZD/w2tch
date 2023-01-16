@@ -1,4 +1,4 @@
-import { IconClock } from '@tabler/icons';
+import { ClockIcon } from '@heroicons/react/24/solid';
 import humanizeDuration from 'humanize-duration';
 
 export const TemporaryAccountAlert: React.FC<{ temporaryAccountExpiresOn: Date }> = ({ temporaryAccountExpiresOn }) => {
@@ -21,7 +21,7 @@ export const TemporaryAccountAlert: React.FC<{ temporaryAccountExpiresOn: Date }
     <div>
       <div className="alert alert-warning hidden shadow-lg md:block">
         <div>
-          <IconClock />
+          <ClockIcon />
           <div className="flex flex-col items-start">
             <div>
               <span className="font-semibold">Heads up!</span> You&apos;re using a temporary account. There{' '}
