@@ -40,7 +40,7 @@ export const TemporaryAccountAlert: React.FC<{ temporaryAccountExpiresOn: Date }
       <div className="alert alert-warning mx-auto max-w-xs shadow-lg md:hidden">
         <div className="flex w-full justify-between">
           <div className="flex items-center gap-x-1.5">
-            <IconClock size="16" />
+            <ClockIcon />
             <div>
               <span className="font-semibold">{shortTimeUntilTemporaryAccountExpires}</span> remaining
             </div>
