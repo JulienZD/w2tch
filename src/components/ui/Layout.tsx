@@ -33,7 +33,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
       >
         <Header visible={status === 'authenticated' && !isCustomPage} />
 
-        <main className={`${isCustomPage ? '' : 'h-full pt-4 md:pt-32'} ${bannerVisible ? 'pb-20' : ''}`}>
+        <main className={`${isCustomPage ? '' : 'h-full pt-12 md:pt-40'} ${bannerVisible ? 'pb-20' : ''}`}>
           {children}
         </main>
       </div>
