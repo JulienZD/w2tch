@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { GetServerSideProps, NextPage } from 'next';
 import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { signupSchema } from '~/models/auth/signup';
@@ -15,27 +14,20 @@ const Signup: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors: error },
-    getValues,
   } = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
   });
-  const signup = trpc.auth.signup.useMutation();
+  const signup = trpc.auth.signup.useMutation({
+    onSuccess: (_, { email, password }) => {
+      return signIn('credentials', {
+        email,
+        password,
+        callbackUrl: returnUrl || '/',
+      });
+    },
+  });
 
-  // Login after successful signup
-  useEffect(() => {
-    const login = async () => {
-      if (signup.isSuccess) {
-        const { email, password } = getValues();
-        await signIn('credentials', {
-          email,
-          password,
-          callbackUrl: '/',
-        });
-      }
-    };
-
-    login().catch(console.error);
-  }, [getValues, router, signup.isSuccess]);
+  const returnUrl = Array.isArray(router.query.returnUrl) ? router.query.returnUrl[0] : router.query.returnUrl;
 
   const handleSignup = handleSubmit((data) => signup.mutate(data));
   const errors = {
@@ -52,45 +44,51 @@ const Signup: NextPage = () => {
   };
 
   return (
-    <div className="container prose">
-      <h1>Create account</h1>
-      {/* <p>
-        This will convert your temporary account into a permanent one. Afterwards you can login using the email and
-        password combination you provided.
-      </p> */}
-      <form onSubmit={handleSignup}>
+    <div className="prose grid h-full place-content-center">
+      <div className="rounded-3xl bg-base-200 px-4 pt-10 shadow-md md:px-8">
+        <h1 className="text-center font-light">Sign up</h1>
         {errors.unknown && <p className="my-2 text-sm text-error">{errors.unknown}</p>}
 
-        <div className="form-control">
-          <label htmlFor="name" className="label">
-            Username
-          </label>
-          <input id="name" {...register('name')} className="input max-w-xs" placeholder="Marty McFly" />
-          {errors.name && <p className="my-0 text-sm text-error">{errors.name}</p>}
-        </div>
-        <div className="form-control">
-          <label htmlFor="email" className="label">
-            Email
-          </label>
-          <input
-            id="email"
-            {...register('email')}
-            type="email"
-            className="input max-w-xs"
-            placeholder="bruce@wayne.com"
-          />
-          {errors.email && <p className="my-0 text-sm text-error">{errors.email}</p>}
-        </div>
-        <div className="form-control">
-          <label htmlFor="password" className="label">
-            Password
-          </label>
-          <input {...register('password')} type="password" className="input max-w-xs" />
-          {errors.password && <p className="my-0 text-sm text-error">{errors.password}</p>}
-        </div>
+        <form onSubmit={handleSignup}>
+          <div className="form-control">
+            <label htmlFor="name" className="label">
+              Username
+            </label>
+            <input id="name" {...register('name')} className="input max-w-xs" placeholder="Marty McFly" />
+            {errors.name && <p className="my-0 text-sm text-error">{errors.name}</p>}
+          </div>
+          <div className="form-control">
+            <label htmlFor="email" className="label">
+              Email
+            </label>
+            <input
+              id="email"
+              {...register('email')}
+              type="email"
+              className="input max-w-xs"
+              placeholder="bruce@wayne.com"
+            />
+            {errors.email && <p className="my-0 text-sm text-error">{errors.email}</p>}
+          </div>
+          <div className="form-control">
+            <label htmlFor="password" className="label">
+              Password
+            </label>
+            <input {...register('password')} type="password" className="input max-w-xs" />
+            {errors.password && <p className="my-0 text-sm text-error">{errors.password}</p>}
+          </div>
 
-        <button className="btn-primary btn mt-2">Create Account</button>
-      </form>
+          {returnUrl && <input type="hidden" name="returnUrl" value={returnUrl} />}
+
+          <button
+            className={`btn-primary btn mt-6 mb-4 w-full md:w-auto md:min-w-[6rem] ${
+              signup.isLoading ? 'loading' : ''
+            }`}
+          >
+            Create Account
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { GetServerSideProps, NextPage } from 'next';
 import { getSession, signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -37,8 +38,8 @@ const Login: NextPage = () => {
   };
 
   return (
-    <div className="grid h-full place-content-center">
-      <div className="prose rounded-3xl bg-base-200 p-10 shadow-md">
+    <div className="prose grid h-full place-content-center">
+      <div className="rounded-3xl bg-base-200 px-4 pt-10 shadow-md md:px-8">
         <h1 className="text-center font-light">Login</h1>
         {error && <p className="my-0 text-sm text-error">Invalid credentials</p>}
         <form onSubmit={onLogin}>
@@ -61,6 +62,19 @@ const Login: NextPage = () => {
 
           <button className="btn-primary btn mt-6 w-full md:mt-4 md:w-auto md:min-w-[6rem]">Login</button>
         </form>
+
+        <p className="mt-6 text-sm">
+          Don&apos;t have an account?{' '}
+          <Link
+            className="text-primary no-underline"
+            href={{
+              pathname: '/signup',
+              ...(returnUrl && { query: { returnUrl } }),
+            }}
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );
