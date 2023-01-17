@@ -11,9 +11,10 @@ type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables
 interface WatchlistContentProps {
   items: WatchlistItem[];
   watchlistId: string;
+  readOnly?: boolean;
 }
 
-export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watchlistId }) => {
+export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watchlistId, readOnly }) => {
   return (
     <ul className="not-prose list-none pl-0">
       {items.map((item) => (
@@ -43,7 +44,7 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
               </div>
             </div>
           </div>
-          <WatchlistContextMenu item={{ ...item, watchlistId }} />
+          {!readOnly && <WatchlistContextMenu item={{ ...item, watchlistId }} />}
         </li>
       ))}
     </ul>

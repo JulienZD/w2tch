@@ -19,6 +19,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
     return null;
   }
 
+  const readOnly = watchlist.isReadOnly;
   const unseenWatchables = watchlist.watchables.filter((m) => !m.seenOn);
 
   return (
@@ -28,7 +29,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
         <span>
           List by <span className="font-semibold">{watchlist.owner?.name}</span>
         </span>
-        <div className="my-0 flex flex-col gap-y-0 md:flex-row md:items-center">
+        <div className="my-0 flex flex-col gap-y-0 gap-x-2 md:flex-row md:items-center">
           <div className="flex items-center">
             <span className="whitespace-nowrap">
               <Pluralize count={watchlist.memberCount} word="member" />
@@ -51,11 +52,11 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
         </div>
       </div>
 
-      <AddItem watchlistId={watchlist.id} />
+      {!readOnly && <AddItem watchlistId={watchlist.id} />}
 
       <div className="divider" />
 
-      <WatchlistContent items={watchlist.watchables} watchlistId={watchlistId} />
+      <WatchlistContent readOnly={readOnly} items={watchlist.watchables} watchlistId={watchlistId} />
     </div>
   );
 };

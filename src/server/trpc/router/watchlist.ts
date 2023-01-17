@@ -14,19 +14,29 @@ export const watchlistRouter = router({
   all: protectedProcedure.query(({ ctx }) => getWatchlistsForUser(ctx.session.user.id, ctx.prisma)),
   byId: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
     const user = ctx.session?.user;
+
+    const userWatchlists = user?.id ? await getWatchlistsForUser(user?.id, ctx.prisma) : [];
     const watchlist = await getWatchlistById(
       { id: input.id, userId: ctx.session?.user?.id, allowVisibleToPublic: true },
       ctx.prisma
     );
 
     // Allow public watchlists to be viewed by anyone
-    if (watchlist?.isVisibleToPublic) return watchlist;
+    if (watchlist?.isVisibleToPublic) {
+      return {
+        ...watchlist,
+        isReadOnly: !userWatchlists.some(({ id }) => id === input.id),
+      };
+    }
 
     // Otherwise, you have to be logged in and be a member of the watchlist
     if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
     if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
-    return watchlist;
+    return {
+      ...watchlist,
+      isReadOnly: false,
+    };
   }),
   create: protectedProcedure.input(createWatchlistSchema).mutation(async ({ input, ctx }) => {
     const userId = ctx.session.user.id;
