@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/20/solid';
+import { UserPlusIcon } from '@heroicons/react/24/solid';
 import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { InviteModal } from '~/components/features/watchlist/invite/InviteModal';
@@ -35,13 +35,13 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
               <Pluralize count={watchlist.memberCount} word="member" />
             </span>
             {watchlist.isOwner && (
-              <span data-tip="Create Invite" className="tooltip tooltip-left md:tooltip-top">
+              <span data-tip="Invite People" className="tooltip tooltip-left md:tooltip-top">
                 <button
                   onClick={openInviteModal}
-                  aria-label="Create invite"
+                  aria-label="Invite People"
                   className="btn-ghost btn-sm btn mx-0.5 px-1"
                 >
-                  <PlusIcon className="h-4 w-4" />
+                  <UserPlusIcon className="h-5 w-5" />
                 </button>
               </span>
             )}
