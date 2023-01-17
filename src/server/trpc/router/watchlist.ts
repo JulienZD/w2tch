@@ -8,13 +8,26 @@ import { getWatchlistInvitesById } from '~/server/data/watchlist/invite/queries'
 import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist/mutations';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
-import { protectedProcedure, router } from '../trpc';
+import { protectedProcedure, publicProcedure, router } from '../trpc';
 
 export const watchlistRouter = router({
   all: protectedProcedure.query(({ ctx }) => getWatchlistsForUser(ctx.session.user.id, ctx.prisma)),
-  byId: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => getWatchlistById({ id: input.id, userId: ctx.session.user.id }, ctx.prisma)),
+  byId: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const user = ctx.session?.user;
+    const watchlist = await getWatchlistById(
+      { id: input.id, userId: ctx.session?.user?.id, allowVisibleToPublic: true },
+      ctx.prisma
+    );
+
+    // Allow public watchlists to be viewed by anyone
+    if (watchlist?.isVisibleToPublic) return watchlist;
+
+    // Otherwise, you have to be logged in and be a member of the watchlist
+    if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
+
+    return watchlist;
+  }),
   create: protectedProcedure.input(createWatchlistSchema).mutation(async ({ input, ctx }) => {
     const userId = ctx.session.user.id;
 

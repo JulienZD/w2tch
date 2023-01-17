@@ -1,4 +1,4 @@
-import type { PrismaClient, Watchable, WatchablesOnWatchlists } from '@prisma/client';
+import { Prisma, type PrismaClient, type Watchable, type WatchablesOnWatchlists } from '@prisma/client';
 
 export const enhanceWatchlistWatchable = ({
   seenOn,
@@ -45,64 +45,80 @@ export const getWatchlistsForUser = async (userId: string, prisma: PrismaClient)
   }));
 };
 
-type GetWatchlistByIdArgs = {
-  id: string;
-  userId: string;
-  ownerOnly?: boolean;
-};
+/**
+ * `userId` is required if `allowVisibleToPublic` is `false` or `undefined`
+ */
+type GetWatchlistByIdArgs =
+  | {
+      id: string;
+      ownerOnly?: boolean;
+    } & (
+      | {
+          allowVisibleToPublic: true;
+          userId?: string;
+        }
+      | {
+          allowVisibleToPublic?: false;
+          userId: string;
+        }
+    );
 
-export const getWatchlistById = async (
-  { id, userId, ownerOnly = false }: GetWatchlistByIdArgs,
-  prisma: PrismaClient
-) => {
-  const watchlist = await prisma.watchlist.findFirst({
-    include: {
-      owner: {
-        select: {
-          name: true,
-        },
+const defaultArgs = Prisma.validator<Prisma.WatchlistFindFirstArgs>()({
+  include: {
+    owner: {
+      select: {
+        name: true,
       },
-      watchables: {
-        include: {
-          watchable: {
-            select: {
-              name: true,
-              id: true,
-              externalId: true,
-              rating: true,
-              type: true,
-              source: true,
-              image: true,
-              runtime: true,
-            },
+    },
+    watchables: {
+      include: {
+        watchable: {
+          select: {
+            name: true,
+            id: true,
+            externalId: true,
+            rating: true,
+            type: true,
+            source: true,
+            image: true,
+            runtime: true,
           },
         },
       },
-      _count: {
-        select: {
-          watchers: true,
-          watchables: true,
-        },
+    },
+    _count: {
+      select: {
+        watchers: true,
+        watchables: true,
       },
     },
+  },
+});
+
+export const getWatchlistById = async (
+  { id, userId, allowVisibleToPublic = false, ownerOnly = false }: GetWatchlistByIdArgs,
+  prisma: PrismaClient
+) => {
+  const memberArgs = !allowVisibleToPublic && {
+    OR: [
+      {
+        watchers: {
+          some: {
+            watcherId: userId,
+          },
+        },
+      },
+      {
+        ownerId: userId,
+      },
+    ],
+  };
+
+  const watchlist = await prisma.watchlist.findFirst({
+    ...defaultArgs,
     where: {
       id,
-      ...(ownerOnly
-        ? { ownerId: userId }
-        : {
-            OR: [
-              {
-                watchers: {
-                  some: {
-                    watcherId: userId,
-                  },
-                },
-              },
-              {
-                ownerId: userId,
-              },
-            ],
-          }),
+      ...(ownerOnly ? { ownerId: userId } : memberArgs),
     },
   });
 
