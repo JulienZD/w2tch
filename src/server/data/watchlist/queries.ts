@@ -70,6 +70,11 @@ const defaultArgs = Prisma.validator<Prisma.WatchlistFindFirstArgs>()({
         name: true,
       },
     },
+    watchers: {
+      select: {
+        watcherId: true,
+      },
+    },
     watchables: {
       include: {
         watchable: {

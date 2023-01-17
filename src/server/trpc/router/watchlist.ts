@@ -15,23 +15,30 @@ export const watchlistRouter = router({
   byId: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
     const user = ctx.session?.user;
 
-    const userWatchlists = user?.id ? await getWatchlistsForUser(user?.id, ctx.prisma) : [];
     const watchlist = await getWatchlistById(
       { id: input.id, userId: ctx.session?.user?.id, allowVisibleToPublic: true },
       ctx.prisma
     );
 
+    if (!watchlist) {
+      if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
+    }
+
+    const userIsMemberOfWatchlist =
+      watchlist.ownerId === user?.id || watchlist.watchers.some(({ watcherId }) => watcherId === user?.id);
+
     // Allow public watchlists to be viewed by anyone
     if (watchlist?.isVisibleToPublic) {
       return {
         ...watchlist,
-        isReadOnly: !userWatchlists.some(({ id }) => id === input.id),
+        isReadOnly: !userIsMemberOfWatchlist,
       };
     }
 
     // Otherwise, you have to be logged in and be a member of the watchlist
     if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
-    if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
+    if (!userIsMemberOfWatchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
 
     return {
       ...watchlist,
