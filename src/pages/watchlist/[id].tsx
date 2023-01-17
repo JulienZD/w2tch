@@ -24,8 +24,11 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
   return (
     <div className="prose max-w-full">
-      <h1>{watchlist.name}</h1>
-      <div className="mb-4 flex items-end justify-between gap-x-4 text-sm md:items-center md:justify-start">
+      <div className="flex flex-col gap-x-0">
+        <span>{watchlist.isVisibleToPublic ? 'Public' : 'Private'} watchlist</span>
+        <h1 className="mt-0 pt-0">{watchlist.name}</h1>
+      </div>
+      <div className="flex items-end justify-between gap-x-4 text-sm md:items-center md:justify-start">
         <span>
           List by <span className="font-semibold">{watchlist.owner?.name}</span>
         </span>
