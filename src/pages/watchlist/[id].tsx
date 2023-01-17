@@ -1,11 +1,13 @@
+import NiceModal from '@ebay/nice-modal-react';
 import { UserPlusIcon } from '@heroicons/react/24/solid';
 import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { InviteModal } from '~/components/features/watchlist/invite/InviteModal';
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
+import { WatchlistContextMenu } from '~/components/features/watchlist/WatchlistContextMenu';
 import { Pluralize } from '~/components/util/Pluralize';
 import { trpc } from '~/utils/trpc';
-import NiceModal from '@ebay/nice-modal-react';
+
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
 
@@ -20,7 +22,6 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
   }
 
   const readOnly = watchlist.isReadOnly;
-  const unseenWatchables = watchlist.watchables.filter((m) => !m.seenOn);
 
   return (
     <div className="prose max-w-full">
@@ -52,6 +53,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
           <span className="whitespace-nowrap">
             <Pluralize count={watchlist.watchableCount} word="entry" />
           </span>
+          {!readOnly && <WatchlistContextMenu watchlistId={watchlist.id} />}
         </div>
       </div>
 

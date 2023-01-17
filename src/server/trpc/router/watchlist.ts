@@ -58,6 +58,24 @@ export const watchlistRouter = router({
 
     return { id: watchlist.id };
   }),
+  edit: protectedProcedure
+    .input(z.object({ id: z.string(), name: z.string().optional(), isVisibleToPublic: z.boolean().optional() }))
+    .mutation(async ({ input, ctx }) => {
+      const watchlist = await getWatchlistById(
+        { id: input.id, userId: ctx.session.user.id, ownerOnly: true },
+        ctx.prisma
+      );
+
+      if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
+
+      await ctx.prisma.watchlist.update({
+        where: { id: input.id },
+        data: {
+          name: input.name,
+          isVisibleToPublic: input.isVisibleToPublic,
+        },
+      });
+    }),
   addItem: protectedProcedure
     .input(zWatchListAddEntry.extend({ watchlistId: z.string() }))
     .mutation(async ({ input, ctx }) => {
