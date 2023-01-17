@@ -4,7 +4,7 @@ import { Runtime } from '~/components/ui/Runtime';
 import { WatchableType } from '~/components/ui/WatchableType';
 import { thumbnail } from '~/utils/thumbnail';
 import { type RouterOutputs } from '~/utils/trpc';
-import { WatchlistContextMenu } from './WatchlistContextMenu';
+import { WatchlistEntryContextMenu } from './WatchlistEntryContextMenu';
 
 type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables'][number];
 
@@ -44,7 +44,7 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
               </div>
             </div>
           </div>
-          {!readOnly && <WatchlistContextMenu item={{ ...item, watchlistId }} />}
+          {!readOnly && <WatchlistEntryContextMenu item={{ ...item, watchlistId }} />}
         </li>
       ))}
     </ul>
