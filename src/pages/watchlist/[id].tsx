@@ -62,7 +62,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
               <Pluralize count={watchlist.watchableCount} word="entry" />
             </span>
           </div>
-          {!readOnly && <WatchlistContextMenu watchlistId={watchlist.id} />}
+          {!readOnly && watchlist.isOwner && <WatchlistContextMenu watchlistId={watchlist.id} />}
         </div>
       </div>
 
