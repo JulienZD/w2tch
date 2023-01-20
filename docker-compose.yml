@@ -2,12 +2,13 @@ version: '3.8'
 
 services:
   db:
-    container_name: postgres
-    image: postgres
+    container_name: w2tch-mariadb
+    image: mariadb
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - 5432:5432
+      - 3306:3306
