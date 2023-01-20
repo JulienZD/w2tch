@@ -1,6 +1,7 @@
 import { type AppType } from 'next/app';
 import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
+import { Analytics } from '@vercel/analytics/react';
 
 import { trpc } from '../utils/trpc';
 
@@ -19,6 +20,11 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
           <Layout>
             {hasSSRSeoProps(pageProps) && <SEO {...pageProps.seo} />}
             <Component {...pageProps} />
+            <Analytics
+              debug={process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production'}
+              // Prevent analytics from running on preview deployments
+              mode={process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' ? 'production' : 'development'}
+            />
           </Layout>
         </NiceModal.Provider>
       </ThemeContextProvider>
