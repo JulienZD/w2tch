@@ -8,12 +8,12 @@ import { InviteModal } from '~/components/features/watchlist/invite/InviteModal'
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
 import { WatchlistContextMenu } from '~/components/features/watchlist/WatchlistContextMenu';
 import { Pluralize } from '~/components/util/Pluralize';
+import { env } from '~/env/server.mjs';
 import type { WithSEOProps } from '~/types/ssr';
+import { toPossessive } from '~/utils/language';
+import { optionalSeo } from '~/utils/seo';
 import { createSSGHelper } from '~/utils/ssg';
 import { trpc } from '~/utils/trpc';
-import { optionalSeo } from '~/utils/seo';
-import { toPossessive } from '~/utils/language';
-import { env } from '~/env/server.mjs';
 
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
@@ -38,7 +38,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
       </div>
       <div className="flex flex-col items-start justify-between gap-x-4 text-sm md:flex-row md:items-center md:justify-start">
         <span>
-          List by <span className="font-semibold">{watchlist.owner?.name?.repeat(5)}</span>
+          List by <span className="font-semibold">{watchlist.owner?.name}</span>
         </span>
         <div className="my-0 flex flex-row items-center gap-y-0 gap-x-2 max-md:w-full max-md:justify-between">
           <div className="flex items-center">
@@ -62,7 +62,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
               <Pluralize count={watchlist.watchableCount} word="entry" />
             </span>
           </div>
-          {!readOnly && <WatchlistContextMenu watchlistId={watchlist.id} />}
+          {!readOnly && watchlist.isOwner && <WatchlistContextMenu watchlistId={watchlist.id} />}
         </div>
       </div>
 
