@@ -22,6 +22,7 @@ specifiers:
   '@types/react-dom': ^18.0.5
   '@typescript-eslint/eslint-plugin': ^5.33.0
   '@typescript-eslint/parser': ^5.33.0
+  '@vercel/analytics': ^0.1.8
   autoprefixer: ^10.4.7
   bcryptjs: ^2.4.3
   cookies-next: ^2.1.1
@@ -61,6 +62,7 @@ dependencies:
   '@trpc/next': 10.8.1_krbki76evwlc7npqxwaznzyyqa
   '@trpc/react-query': 10.8.1_ip5jsvekau5hoibigmxxvvndve
   '@trpc/server': 10.8.1
+  '@vercel/analytics': 0.1.8_react@18.2.0
   bcryptjs: 2.4.3
   cookies-next: 2.1.1
   daisyui: 2.43.2_r4gnkvssmvyxmi2wmat5xbx36a
@@ -657,6 +659,14 @@ packages:
       '@typescript-eslint/types': 5.46.1
       eslint-visitor-keys: 3.3.0
     dev: true
+
+  /@vercel/analytics/0.1.8_react@18.2.0:
+    resolution: {integrity: sha512-PQrOI8BJ9qUiVJuQfnKiJd15eDjDJH9TBKsNeMrtelT4NAk7d9mBVz1CoZkvoFnHQ0OW7Xnqmr1F2nScfAnznQ==}
+    peerDependencies:
+      react: ^16.8||^17||^18
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /acorn-jsx/5.3.2_acorn@8.8.1:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
