@@ -16,12 +16,9 @@ const Home: NextPage = () => {
             </h1>
             <div className="py-6">
               {session ? (
-                <p>Welcome back, {session.user?.name}!</p>
+                <p>Welcome back, {session.user.name}!</p>
               ) : (
-                <>
-                  <p>Create, manage, and share watchlists with your friends.</p>
-                  <p className="mt-2">No account required.</p>
-                </>
+                <p>Create, manage, and share watchlists with your friends.</p>
               )}
             </div>
             {session ? (
@@ -30,7 +27,7 @@ const Home: NextPage = () => {
               </a>
             ) : (
               <>
-                <a className="btn-primary btn" href="/new">
+                <a className="btn-primary btn" href="/signup">
                   Get started
                 </a>
                 <p className="mt-2 text-sm">

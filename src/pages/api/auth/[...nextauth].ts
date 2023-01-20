@@ -62,7 +62,7 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
     session({ session, user }) {
       if (user) {
         session.user = {
-          name: user.name,
+          name: user.name as string,
           email: user.email,
           id: user.id,
         };
