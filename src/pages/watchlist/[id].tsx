@@ -38,7 +38,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
       </div>
       <div className="flex flex-col items-start justify-between gap-x-4 text-sm md:flex-row md:items-center md:justify-start">
         <span>
-          List by <span className="font-semibold">{watchlist.owner?.name?.repeat(5)}</span>
+          List by <span className="font-semibold">{watchlist.owner?.name}</span>
         </span>
         <div className="my-0 flex flex-row items-center gap-y-0 gap-x-2 max-md:w-full max-md:justify-between">
           <div className="flex items-center">
