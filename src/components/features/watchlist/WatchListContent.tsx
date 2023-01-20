@@ -4,16 +4,17 @@ import { Runtime } from '~/components/ui/Runtime';
 import { WatchableType } from '~/components/ui/WatchableType';
 import { thumbnail } from '~/utils/thumbnail';
 import { type RouterOutputs } from '~/utils/trpc';
-import { WatchlistContextMenu } from './WatchlistContextMenu';
+import { WatchlistEntryContextMenu } from './WatchlistEntryContextMenu';
 
 type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables'][number];
 
 interface WatchlistContentProps {
   items: WatchlistItem[];
   watchlistId: string;
+  readOnly?: boolean;
 }
 
-export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watchlistId }) => {
+export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watchlistId, readOnly }) => {
   return (
     <ul className="not-prose list-none pl-0">
       {items.map((item) => (
@@ -43,7 +44,7 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
               </div>
             </div>
           </div>
-          <WatchlistContextMenu item={{ ...item, watchlistId }} />
+          {!readOnly && <WatchlistEntryContextMenu item={{ ...item, watchlistId }} />}
         </li>
       ))}
     </ul>

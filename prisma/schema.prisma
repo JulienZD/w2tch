@@ -76,6 +76,8 @@ model Watchlist {
 
   openInvites WatchlistInvite[]
 
+  isVisibleToPublic Boolean @default(false)
+
   createdAt DateTime? @default(now()) @ignore
   updatedAt DateTime? @default(now()) @updatedAt @ignore
 }
