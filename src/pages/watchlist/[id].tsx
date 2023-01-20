@@ -36,30 +36,32 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
         <span>{watchlist.isVisibleToPublic ? 'Public' : 'Private'} watchlist</span>
         <h1 className="mt-0 pt-0">{watchlist.name}</h1>
       </div>
-      <div className="flex items-end justify-between gap-x-4 text-sm md:items-center md:justify-start">
+      <div className="flex flex-col items-start justify-between gap-x-4 text-sm md:flex-row md:items-center md:justify-start">
         <span>
-          List by <span className="font-semibold">{watchlist.owner?.name}</span>
+          List by <span className="font-semibold">{watchlist.owner?.name?.repeat(5)}</span>
         </span>
-        <div className="my-0 flex flex-col gap-y-0 gap-x-2 md:flex-row md:items-center">
+        <div className="my-0 flex flex-row items-center gap-y-0 gap-x-2 max-md:w-full max-md:justify-between">
           <div className="flex items-center">
-            <span className="whitespace-nowrap">
-              <Pluralize count={watchlist.memberCount} word="member" />
-            </span>
-            {watchlist.isOwner && (
-              <span data-tip="Invite People" className="tooltip tooltip-left md:tooltip-top">
-                <button
-                  onClick={openInviteModal}
-                  aria-label="Invite People"
-                  className="btn-ghost btn-sm btn mx-0.5 px-1"
-                >
-                  <UserPlusIcon className="h-5 w-5" />
-                </button>
+            <div className="flex items-center">
+              <span className="whitespace-nowrap">
+                <Pluralize count={watchlist.memberCount} word="member" />
               </span>
-            )}
+              {watchlist.isOwner && (
+                <span data-tip="Invite People" className="tooltip tooltip-top">
+                  <button
+                    onClick={openInviteModal}
+                    aria-label="Invite People"
+                    className="btn-ghost btn-sm btn mx-0.5 px-1"
+                  >
+                    <UserPlusIcon className="h-5 w-5" />
+                  </button>
+                </span>
+              )}
+            </div>
+            <span className="whitespace-nowrap">
+              <Pluralize count={watchlist.watchableCount} word="entry" />
+            </span>
           </div>
-          <span className="whitespace-nowrap">
-            <Pluralize count={watchlist.watchableCount} word="entry" />
-          </span>
           {!readOnly && <WatchlistContextMenu watchlistId={watchlist.id} />}
         </div>
       </div>
