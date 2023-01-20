@@ -1,12 +1,19 @@
 import NiceModal from '@ebay/nice-modal-react';
 import { UserPlusIcon } from '@heroicons/react/24/solid';
+import { TRPCError } from '@trpc/server';
 import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
+import pluralize from 'pluralize';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { InviteModal } from '~/components/features/watchlist/invite/InviteModal';
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
 import { WatchlistContextMenu } from '~/components/features/watchlist/WatchlistContextMenu';
 import { Pluralize } from '~/components/util/Pluralize';
+import type { WithSEOProps } from '~/types/ssr';
+import { createSSGHelper } from '~/utils/ssg';
 import { trpc } from '~/utils/trpc';
+import { optionalSeo } from '~/utils/seo';
+import { toPossessive } from '~/utils/language';
+import { env } from '~/env/server.mjs';
 
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
@@ -68,8 +75,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
 export default WatchList;
 
-// eslint-disable-next-line @typescript-eslint/require-await
-export const getServerSideProps: GetServerSideProps<{ watchlistId: string }> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<WithSEOProps<{ watchlistId: string }, true>> = async (ctx) => {
   const watchlistId = ctx.params?.id as string | undefined;
 
   if (!watchlistId) {
@@ -78,9 +84,33 @@ export const getServerSideProps: GetServerSideProps<{ watchlistId: string }> = a
     };
   }
 
+  const { ssg } = await createSSGHelper(ctx);
+  const watchlist = await ssg.watchlist.byId.fetch({ id: watchlistId }).catch((err) => {
+    if (err instanceof TRPCError && err.code === 'PRECONDITION_FAILED') {
+      return {} as never;
+    }
+    return null;
+  });
+
+  if (!watchlist) {
+    return {
+      notFound: true,
+    };
+  }
+
+  await ssg.watchlist.byId.prefetch({ id: watchlistId });
+
   return {
     props: {
       watchlistId,
+      ...optionalSeo(watchlist.isVisibleToPublic, {
+        title: watchlist.name,
+        description: `
+            See ${toPossessive(watchlist.owner?.name ?? 'unknown')} watchlist on ${env.NEXT_PUBLIC_APP_NAME} | ${
+          watchlist.watchableCount
+        } ${pluralize('title', watchlist.watchableCount)}
+        `.trim(),
+      }),
     },
   };
 };
