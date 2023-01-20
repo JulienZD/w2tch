@@ -8,12 +8,12 @@ import { InviteModal } from '~/components/features/watchlist/invite/InviteModal'
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
 import { WatchlistContextMenu } from '~/components/features/watchlist/WatchlistContextMenu';
 import { Pluralize } from '~/components/util/Pluralize';
+import { env } from '~/env/server.mjs';
 import type { WithSEOProps } from '~/types/ssr';
+import { toPossessive } from '~/utils/language';
+import { optionalSeo } from '~/utils/seo';
 import { createSSGHelper } from '~/utils/ssg';
 import { trpc } from '~/utils/trpc';
-import { optionalSeo } from '~/utils/seo';
-import { toPossessive } from '~/utils/language';
-import { env } from '~/env/server.mjs';
 
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });

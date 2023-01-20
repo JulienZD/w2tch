@@ -5,6 +5,7 @@ import { TemporaryAccountAlert } from '../auth/TemporaryAccountAlert';
 import { AccountRequiredGuard } from './AccountRequiredGuard';
 import { Header } from './Header';
 
+const isPageWithoutHeader = (route: string) => ['/', '/login', '/signup'].includes(route);
 const isCustomStyledPage = (route: string) => ['/', '/join/[code]'].includes(route);
 const isSpecialPage = (route: string) => ['/', '/login', '/signup'].includes(route);
 
@@ -31,7 +32,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
       <div
         className={`container relative h-full px-2 md:px-0 ${isCustomPage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}
       >
-        <Header visible={status === 'authenticated' && !isCustomPage} />
+        {!isPageWithoutHeader(route) && <Header visible={status === 'authenticated'} />}
 
         <main className={`${isCustomPage ? '' : 'h-full pt-12 md:pt-40'} ${bannerVisible ? 'pb-20' : ''}`}>
           {children}
