@@ -10,7 +10,7 @@ export const UserMenu: React.FC = () => {
   const { status, data: session } = useSession();
   const { theme, setTheme } = useTheme();
 
-  if (status !== 'authenticated' || !session.user?.name) return null;
+  if (status !== 'authenticated' || !session.user.name) return null;
 
   const { user } = session;
 
