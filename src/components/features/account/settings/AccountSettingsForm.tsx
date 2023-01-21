@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { User } from '@prisma/client';
+import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { profileSchema } from '~/models/user';
@@ -24,7 +25,13 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
     resolver: zodResolver(zAccountInfo),
   });
 
-  const updateAccount = trpc.me.updateAccount.useMutation();
+  const updateAccount = trpc.me.updateAccount.useMutation({
+    onSuccess: async (_, updated) => {
+      // TODO: See if this has security implications, no checks are done to verify whether the
+      // user actually exists?
+      await signIn('update-user', { user: { ...user, ...updated }, redirect: false });
+    },
+  });
   return (
     <>
       <h2 className="my-0 text-xl">Profile</h2>

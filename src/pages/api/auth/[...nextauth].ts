@@ -10,6 +10,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
 import { env } from '~/env/server.mjs';
 import { prisma } from '~/server/db/client';
+import type { User } from 'next-auth';
 
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 const TWENTY_FOUR_HOURS = 24 * 60 * 60;
@@ -103,6 +104,15 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
     adapter,
     secret: env.NEXTAUTH_SECRET,
     providers: [
+      CredentialsProvider({
+        id: 'update-user',
+        credentials: {},
+        // @ts-expect-error This is okay
+        authorize(credentials?: { user: string }) {
+          if (!credentials) return null;
+          return { user: JSON.parse(credentials.user) as User };
+        },
+      }),
       CredentialsProvider({
         credentials: {
           email: { label: 'Email', type: 'email', placeholder: 'Email' },
