@@ -1,15 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { GetServerSideProps, NextPage } from 'next';
-import { getSession, signIn } from 'next-auth/react';
+import type { NextPage } from 'next';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
+import { useRedirectIfAuth } from '~/hooks/useRedirectIfAuth';
 import { signupSchema } from '~/models/auth/signup';
 import { getFormOrMutationError } from '~/utils/form/get-errors';
 import { trpc } from '~/utils/trpc';
 
 const Signup: NextPage = () => {
+  useRedirectIfAuth('/');
+
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -88,26 +93,22 @@ const Signup: NextPage = () => {
             Create Account
           </button>
         </form>
+
+        <p className="mt-4 text-sm">
+          Already have an account?{' '}
+          <Link
+            className="text-primary no-underline"
+            href={{
+              pathname: '/login',
+              ...(returnUrl && { query: { returnUrl } }),
+            }}
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
 };
 
 export default Signup;
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getSession(ctx);
-
-  if (session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};

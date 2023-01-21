@@ -15,6 +15,9 @@ export const getBaseUrl = () => {
 
 export const trpc = createTRPCNext<AppRouter>({
   config({ ctx }) {
+    // Enable react-query mutations and queries locally when there's no internet connection
+    const networkMode = process.env.NODE_ENV === 'development' ? 'always' : 'online';
+
     return {
       transformer: superjson,
       links: [
@@ -36,6 +39,16 @@ export const trpc = createTRPCNext<AppRouter>({
           },
         }),
       ],
+      queryClientConfig: {
+        defaultOptions: {
+          mutations: {
+            networkMode,
+          },
+          queries: {
+            networkMode,
+          },
+        },
+      },
     };
   },
   ssr: false,
