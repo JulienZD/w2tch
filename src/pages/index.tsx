@@ -1,5 +1,6 @@
 import { type NextPage } from 'next';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { SEO } from '~/components/common/SEO';
 
 const Home: NextPage = () => {
@@ -22,19 +23,19 @@ const Home: NextPage = () => {
               )}
             </div>
             {session ? (
-              <a className="btn-primary btn mt-2" href="/dashboard">
+              <Link className="btn-primary btn mt-2" href="/dashboard">
                 My watchlists
-              </a>
+              </Link>
             ) : (
               <>
-                <a className="btn-primary btn" href="/signup">
+                <Link className="btn-primary btn" href="/signup">
                   Get started
-                </a>
+                </Link>
                 <p className="mt-2 text-sm">
                   Already have an account?{' '}
-                  <a className="link-primary" href="/login">
+                  <Link className="link-primary" href="/login">
                     Login
-                  </a>
+                  </Link>
                 </p>
               </>
             )}

@@ -1,5 +1,6 @@
 import { ClockIcon } from '@heroicons/react/24/solid';
 import humanizeDuration from 'humanize-duration';
+import Link from 'next/link';
 
 export const TemporaryAccountAlert: React.FC<{ temporaryAccountExpiresOn: Date }> = ({ temporaryAccountExpiresOn }) => {
   const timeDiff = temporaryAccountExpiresOn.getTime() - new Date().getTime();
@@ -29,9 +30,9 @@ export const TemporaryAccountAlert: React.FC<{ temporaryAccountExpiresOn: Date }
               until you lose access.
             </div>
             <div>
-              <a className="link-primary" href="/signup">
+              <Link className="link-primary" href="/signup">
                 Create an account
-              </a>{' '}
+              </Link>{' '}
               <span>to prevent losing access to your data.</span>
             </div>
           </div>
@@ -45,9 +46,9 @@ export const TemporaryAccountAlert: React.FC<{ temporaryAccountExpiresOn: Date }
               <span className="font-semibold">{shortTimeUntilTemporaryAccountExpires}</span> remaining
             </div>
           </div>
-          <a className="link-primary" href="/signup">
+          <Link className="link-primary" href="/signup">
             Sign up
-          </a>
+          </Link>
         </div>
       </div>
     </div>

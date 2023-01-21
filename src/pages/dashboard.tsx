@@ -1,7 +1,8 @@
 import type { NextPage } from 'next';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { SEO } from '~/components/common/SEO';
 import { Pluralize } from '~/components/util/Pluralize';
-import { useRouter } from 'next/router';
 import { trpc } from '~/utils/trpc';
 
 const Dashboard: NextPage = () => {
@@ -14,9 +15,9 @@ const Dashboard: NextPage = () => {
       <div className="prose">
         <h1>My watchlists</h1>
         <p>All the watchlists you own or are a member of.</p>
-        <a className="btn-primary btn-sm btn mb-4" href="/new">
+        <Link className="btn-primary btn-sm btn mb-4" href="/new">
           Create new
-        </a>
+        </Link>
         <div className="flex w-full flex-wrap gap-4">
           {!!watchlists &&
             watchlists.map((watchlist) => (
