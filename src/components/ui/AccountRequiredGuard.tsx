@@ -1,6 +1,6 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { trpc } from '~/utils/trpc';
 
 export const AccountRequiredGuard: React.FC = () => {
   const [shouldShow, setShouldShow] = useState(false);
@@ -21,9 +21,9 @@ export const AccountRequiredGuard: React.FC = () => {
         <p>Hey there! You need an account to access this page.</p>
         <p>
           Already have one?{' '}
-          <a href={`/login?returnUrl=${asPath}`} onClick={() => setShouldShow(false)} className="link-primary link">
+          <Link href={`/login?returnUrl=${asPath}`} onClick={() => setShouldShow(false)} className="link-primary link">
             Login
-          </a>
+          </Link>
         </p>
         <p>
           <button onClick={createAccount} className="link-primary link">
