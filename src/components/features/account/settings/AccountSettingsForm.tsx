@@ -2,11 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { User } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { signupSchema } from '~/models/auth/signup';
+import { profileSchema } from '~/models/user';
+import { trpc } from '~/utils/trpc';
 
-const zAccountInfo = signupSchema.pick({ name: true, password: true }).extend({
-  currentPassword: z.string(),
-});
+const zAccountInfo = z.object(profileSchema);
+//  signupSchema.pick({ name: true, password: true }).extend({
+//   currentPassword: z.string(),
+// });
 
 type AccountSettingsFormProps = {
   user: User;
@@ -15,24 +17,25 @@ type AccountSettingsFormProps = {
 export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }) => {
   const form = useForm<typeof zAccountInfo['_type']>({
     defaultValues: {
-      name: user.name as string,
-      password: '',
-      currentPassword: '',
+      name: user.name,
+      // password: '',
+      // currentPassword: '',
     },
     resolver: zodResolver(zAccountInfo),
   });
 
+  const updateAccount = trpc.me.updateAccount.useMutation();
   return (
     <>
-      <h2 className="my-0">Profile</h2>
+      <h2 className="my-0 text-xl">Profile</h2>
       <p>This information is displayed publicly.</p>
-      <form className="max-w-sm">
+      <form onSubmit={form.handleSubmit((data) => updateAccount.mutate(data))} className="max-w-sm">
         <div className="form-control">
           <label htmlFor="name">Name</label>
           <input className="input" id="name" {...form.register('name')} />
         </div>
 
-        <h2>Security</h2>
+        {/* <h2 className="text-xl">Security</h2>
         <div className="form-control">
           <label htmlFor="password">Password</label>
           <input className="input" id="password" type="password" {...form.register('password')} />
@@ -41,7 +44,11 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
         <div className="form-control">
           <label htmlFor="currentPassword">Current Password</label>
           <input className="input" id="currentPassword" type="currentPassword" {...form.register('currentPassword')} />
-        </div>
+        </div> */}
+
+        <button type="submit" className="btn">
+          Save
+        </button>
       </form>
     </>
   );
