@@ -41,7 +41,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
           List by <span className="font-semibold">{watchlist.owner?.name}</span>
         </span>
         <div className="my-0 flex flex-row items-center gap-y-0 gap-x-2 max-md:w-full max-md:justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center gap-x-2">
             <div className="flex items-center">
               <span className="whitespace-nowrap">
                 <Pluralize count={watchlist.memberCount} word="member" />
