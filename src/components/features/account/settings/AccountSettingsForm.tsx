@@ -43,7 +43,7 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
       <p>This information is displayed publicly.</p>
       <form onSubmit={handleSubmit} className="max-w-sm">
         <div className="form-control">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">Username</label>
           <input className="input" id="name" {...form.register('name')} />
         </div>
 
@@ -58,8 +58,8 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
           <input className="input" id="currentPassword" type="currentPassword" {...form.register('currentPassword')} />
         </div> */}
 
-        <button type="submit" className="btn">
-          Save
+        <button type="submit" className="btn-primary btn mt-4">
+          Update
         </button>
       </form>
     </>
