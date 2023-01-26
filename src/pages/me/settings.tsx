@@ -4,8 +4,11 @@ import { useRequiresAuth } from '~/hooks/useRequiresAuth';
 import { trpc } from '~/utils/trpc';
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: 'medium',
-  timeStyle: 'medium',
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
 });
 
 const AccountSettings: NextPage = () => {
