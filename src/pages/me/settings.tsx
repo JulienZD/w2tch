@@ -27,6 +27,16 @@ const AccountSettings: NextPage = () => {
 
       {userSettings.data && <AccountSettingsForm user={userSettings.data} />}
       <p className="text-sm">This account was created on {dateFormatter.format(userSettings.data?.createdAt)}.</p>
+
+      <div className="not-prose mt-4 rounded-md border border-red-600  p-4">
+        <h2 className="mb-4 text-red-600">Danger Zone</h2>
+        <p className="text-sm">
+          Deleting your account will remove all of your data from our servers. This action cannot be undone.
+        </p>
+        <button className="btn mt-4 bg-red-800 text-white hover:bg-red-900 focus-visible:outline-red-800">
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 };
