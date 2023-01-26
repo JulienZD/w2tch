@@ -27,16 +27,21 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
 
   const updateAccount = trpc.me.updateAccount.useMutation({
     onSuccess: async (_, updated) => {
-      // TODO: See if this has security implications, no checks are done to verify whether the
-      // user actually exists?
       await signIn('update-user', { user: { ...user, ...updated }, redirect: false });
     },
   });
+
+  const handleSubmit = form.handleSubmit((data) => {
+    if (data.name === user.name) return;
+
+    updateAccount.mutate(data);
+  });
+
   return (
     <>
       <h2 className="my-0 text-xl">Profile</h2>
       <p>This information is displayed publicly.</p>
-      <form onSubmit={form.handleSubmit((data) => updateAccount.mutate(data))} className="max-w-sm">
+      <form onSubmit={handleSubmit} className="max-w-sm">
         <div className="form-control">
           <label htmlFor="name">Name</label>
           <input className="input" id="name" {...form.register('name')} />
