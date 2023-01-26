@@ -1,10 +1,9 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import type { User } from '@prisma/client';
 import { signIn } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { profileSchema } from '~/models/user';
 import { trpc } from '~/utils/trpc';
+import { useTrpcForm } from '~/hooks/useTrpcForm';
 
 const zAccountInfo = z.object(profileSchema);
 //  signupSchema.pick({ name: true, password: true }).extend({
@@ -16,19 +15,20 @@ type AccountSettingsFormProps = {
 };
 
 export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }) => {
-  const form = useForm<typeof zAccountInfo['_type']>({
+  const updateAccount = trpc.me.updateAccount.useMutation({
+    onSuccess: async (_, updated) => {
+      await signIn('update-user', { user: { ...user, ...updated }, redirect: false });
+    },
+  });
+
+  const { form, errors } = useTrpcForm({
+    schema: zAccountInfo,
     defaultValues: {
       name: user.name,
       // password: '',
       // currentPassword: '',
     },
-    resolver: zodResolver(zAccountInfo),
-  });
-
-  const updateAccount = trpc.me.updateAccount.useMutation({
-    onSuccess: async (_, updated) => {
-      await signIn('update-user', { user: { ...user, ...updated }, redirect: false });
-    },
+    mutation: updateAccount,
   });
 
   const handleSubmit = form.handleSubmit((data) => {
@@ -45,6 +45,7 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
         <div className="form-control">
           <label htmlFor="name">Username</label>
           <input className="input" id="name" {...form.register('name')} />
+          {errors.name && <p className="my-0 text-sm text-error">{errors.name}</p>}
         </div>
 
         {/* <h2 className="text-xl">Security</h2>
