@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { UseTRPCMutationResult } from '@trpc/react-query/shared';
 import type { FieldErrorsImpl } from 'react-hook-form';
 import type { z } from 'zod';
 
-type ErrorKey<TFormErrors extends FormErrors, TMutation extends TRPCMutationWithZodError> = keyof NonNullable<
-  TMutation['variables']
-> &
-  keyof TFormErrors;
+type ErrorKey<TFormErrors extends FormErrors, TMutation extends TRPCMutationWithZodError<any>> =
+  | keyof NonNullable<TMutation['variables']>
+  | keyof TFormErrors;
 
-export const getFormOrMutationError = <TFormErrors extends FormErrors, TMutation extends TRPCMutationWithZodError>(
+type ErrorValue = string | string[] | undefined;
+
+export const getFormOrMutationError = <TFormErrors extends FormErrors, TMutation extends TRPCMutationWithZodError<any>>(
   field: ErrorKey<TFormErrors, TMutation>,
   errors: TFormErrors,
   mutation?: TMutation
@@ -16,31 +18,33 @@ export const getFormOrMutationError = <TFormErrors extends FormErrors, TMutation
   return errors[_field]?.message ?? mutation?.error?.data?.zodError?.fieldErrors?.[_field];
 };
 
-export const getFormOrMutationErrors = <TFormErrors extends FormErrors, TMutation extends TRPCMutationWithZodError>(
+/**
+ * Get errors from form and mutation
+ */
+export const getFormOrMutationErrors = <
+  TFormErrors extends FormErrors,
+  TMutation extends TRPCMutationWithZodError<any>
+>(
   errors: TFormErrors,
   mutation?: TMutation
-): Record<ErrorKey<TFormErrors, TMutation>, string | string[] | undefined> => {
+): Partial<Record<ErrorKey<TFormErrors, TMutation>, ErrorValue>> => {
   type _ErrorKey = ErrorKey<TFormErrors, TMutation>;
-  const _errors = {} as Record<_ErrorKey, string | string[] | undefined>;
-  Object.keys(errors).forEach((key) => {
-    _errors[key as _ErrorKey] = getFormOrMutationError(key as _ErrorKey, errors, mutation);
-  });
 
-  if (!mutation?.error?.data?.zodError?.fieldErrors) return _errors;
+  const formFields = Object.keys(errors) as _ErrorKey[];
+  const mutationFields = Object.keys(mutation?.error?.data?.zodError?.fieldErrors ?? {}) as _ErrorKey[];
 
-  Object.keys(mutation.error.data.zodError.fieldErrors).forEach((key) => {
-    _errors[key as _ErrorKey] = getFormOrMutationError(key as _ErrorKey, errors, mutation);
-  });
-
-  return _errors;
+  return Object.fromEntries(
+    [...formFields, ...mutationFields].map((key) => {
+      return [key, getFormOrMutationError(key, errors, mutation)];
+    })
+  ) as Partial<Record<_ErrorKey, ErrorValue>>;
 };
 
 type FormErrors = Partial<FieldErrorsImpl<Record<string, unknown>>>;
 
-type TRPCMutationWithZodError = UseTRPCMutationResult<
+export type TRPCMutationWithZodError<TVariables> = UseTRPCMutationResult<
   unknown,
   { data?: { zodError?: z.typeToFlattenedError<Record<string, unknown>> | null } | null },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any,
+  TVariables,
   unknown
 >;

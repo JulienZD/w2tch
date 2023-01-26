@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { useRedirectIfAuth } from '~/hooks/useRedirectIfAuth';
 import { loginSchema } from '~/models/auth/login';
-import { getFormOrMutationError } from '~/utils/form/get-errors';
+import { getFormOrMutationErrors } from '~/utils/form/get-errors';
 
 const Login: NextPage = () => {
   useRedirectIfAuth('/');
@@ -35,10 +35,7 @@ const Login: NextPage = () => {
     }
   });
 
-  const errors = {
-    email: getFormOrMutationError('email', formErrors),
-    password: getFormOrMutationError('password', formErrors),
-  };
+  const errors = getFormOrMutationErrors(formErrors);
 
   return (
     <div className="prose grid h-full place-content-center">
