@@ -14,7 +14,10 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 const AccountSettings: NextPage = () => {
   const { user } = useRequiresAuth();
 
-  const userSettings = trpc.me.settings.useQuery();
+  const userSettings = trpc.me.settings.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   if (!user || userSettings.isLoading) return null;
 
