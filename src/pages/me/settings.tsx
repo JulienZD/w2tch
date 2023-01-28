@@ -1,8 +1,9 @@
 import NiceModal from '@ebay/nice-modal-react';
-import type { NextPage } from 'next';
+import type { GetStaticProps, NextPage } from 'next';
 import { AccountSettingsForm } from '~/components/features/account/settings/AccountSettingsForm';
 import { ConfirmDeleteModal } from '~/components/features/account/settings/ConfirmDeleteModal';
 import { useRequiresAuth } from '~/hooks/useRequiresAuth';
+import type { SEOProps } from '~/types/ssr';
 import { trpc } from '~/utils/trpc';
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -56,3 +57,11 @@ const AccountSettings: NextPage = () => {
 };
 
 export default AccountSettings;
+
+export const getStaticProps: GetStaticProps<SEOProps> = () => ({
+  props: {
+    seo: {
+      title: 'Account Settings',
+    },
+  },
+});
