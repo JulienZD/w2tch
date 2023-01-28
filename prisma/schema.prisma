@@ -32,6 +32,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -40,6 +41,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -83,6 +86,8 @@ model Watchlist {
 
   createdAt DateTime? @default(now()) @ignore
   updatedAt DateTime? @default(now()) @updatedAt @ignore
+
+  @@index([ownerId])
 }
 
 model WatchersOnWatchlists {
@@ -98,6 +103,8 @@ model WatchersOnWatchlists {
   updatedAt DateTime @default(now()) @updatedAt @ignore
 
   @@id([watcherId, watchlistId])
+  @@index([watcherId])
+  @@index([watchlistId])
 }
 
 enum ExternalWatchableSource {
@@ -142,6 +149,8 @@ model WatchablesOnWatchlists {
   updatedAt DateTime @default(now()) @updatedAt @ignore
 
   @@id([watchableId, watchlistId])
+  @@index([watchableId])
+  @@index([watchlistId])
 }
 
 model WatchlistInvite {
@@ -155,4 +164,6 @@ model WatchlistInvite {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt @ignore
+
+  @@index([watchlistId])
 }
