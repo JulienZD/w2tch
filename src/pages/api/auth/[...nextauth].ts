@@ -7,10 +7,10 @@ import { randomUUID } from 'crypto';
 import { getCookie, setCookie } from 'cookies-next';
 import { encode, decode } from 'next-auth/jwt';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import bcrypt from 'bcryptjs';
 import { env } from '~/env/server.mjs';
 import { prisma } from '~/server/db/client';
 import type { User } from 'next-auth';
+import { comparePassword } from '~/server/utils/auth/password';
 
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 const TWENTY_FOUR_HOURS = 24 * 60 * 60;
@@ -131,7 +131,7 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
 
             if (!user) return null;
 
-            const match = await bcrypt.compare(credentials.password, user.password);
+            const match = await comparePassword(credentials.password, user.password);
             if (!match) return null;
 
             return {
