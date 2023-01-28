@@ -20,6 +20,15 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", ".prettierrc", ".eslintrc.cjs"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    ".prettierrc",
+    ".eslintrc.cjs",
+    "sentry.*.config.js"
+  ],
   "exclude": ["node_modules"]
 }
