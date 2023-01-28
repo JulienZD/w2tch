@@ -14,6 +14,12 @@ type AccountSettingsFormProps = {
   user: User;
 };
 
+const hasUserDataChanged = (data: z.infer<typeof zAccountInfo>, user: User) => {
+  return Object.keys(data)
+    .filter((field) => field in user)
+    .some((field) => data[field as keyof typeof data] !== user[field as keyof User]);
+};
+
 export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }) => {
   const updateAccount = trpc.me.updateAccount.useMutation({
     onSuccess: async (_, updated) => {
@@ -25,14 +31,19 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
     schema: zAccountInfo,
     defaultValues: {
       name: user.name,
+      email: user.email ?? '',
       // password: '',
       // currentPassword: '',
     },
     mutation: updateAccount,
   });
 
+  errors.email ??= updateAccount.error?.data?.code === 'CONFLICT' ? 'This email is already in use' : undefined;
+
   const handleSubmit = form.handleSubmit((data) => {
-    if (data.name === user.name) return;
+    if (!hasUserDataChanged(data, user)) {
+      return;
+    }
 
     updateAccount.mutate(data);
   });
@@ -40,12 +51,21 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
   return (
     <>
       <h2 className="my-0 text-xl">Profile</h2>
-      <p>This information is displayed publicly.</p>
+      <p className="mb-2">This information is displayed publicly.</p>
       <form onSubmit={handleSubmit} className="max-w-sm">
         <div className="form-control">
           <label htmlFor="name">Username</label>
           <input className="input" id="name" {...form.register('name')} />
           {errors.name && <p className="my-0 text-sm text-error">{errors.name}</p>}
+        </div>
+
+        <h2 className="mb-0 mt-8 text-xl">Account</h2>
+        <p className="mb-2">This information is only visible to you.</p>
+
+        <div className="form-control">
+          <label htmlFor="email">Email</label>
+          <input className="input" id="email" {...form.register('email')} />
+          {errors.email && <p className="my-0 text-sm text-error">{errors.email}</p>}
         </div>
 
         {/* <h2 className="text-xl">Security</h2>
@@ -59,7 +79,7 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
           <input className="input" id="currentPassword" type="currentPassword" {...form.register('currentPassword')} />
         </div> */}
 
-        <button type="submit" className="btn-primary btn mt-4">
+        <button type="submit" className={`btn-primary btn mt-4 ${updateAccount.isLoading ? 'loading' : ''}`}>
           Update
         </button>
       </form>
