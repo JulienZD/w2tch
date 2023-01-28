@@ -1,5 +1,7 @@
+import NiceModal from '@ebay/nice-modal-react';
 import type { NextPage } from 'next';
 import { AccountSettingsForm } from '~/components/features/account/settings/AccountSettingsForm';
+import { ConfirmDeleteModal } from '~/components/features/account/settings/ConfirmDeleteModal';
 import { useRequiresAuth } from '~/hooks/useRequiresAuth';
 import { trpc } from '~/utils/trpc';
 
@@ -19,6 +21,8 @@ const AccountSettings: NextPage = () => {
     refetchOnReconnect: false,
   });
 
+  const deleteAccount = trpc.me.deleteAccount.useMutation();
+
   if (!user || userSettings.isLoading) return null;
 
   return (
@@ -33,7 +37,17 @@ const AccountSettings: NextPage = () => {
         <p className="text-sm">
           Deleting your account will remove all of your data from our servers. This action cannot be undone.
         </p>
-        <button className="btn mt-4 bg-red-800 text-white hover:bg-red-900 focus-visible:outline-red-800">
+        <button
+          className="btn mt-4 bg-red-800 text-white hover:bg-red-900 focus-visible:outline-red-800"
+          onClick={() => {
+            return NiceModal.show(ConfirmDeleteModal, {
+              onDelete: async () => {
+                await deleteAccount.mutateAsync();
+                window.location.href = '/';
+              },
+            });
+          }}
+        >
           Delete Account
         </button>
       </div>
