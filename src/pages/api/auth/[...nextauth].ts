@@ -11,6 +11,7 @@ import { env } from '~/env/server.mjs';
 import { prisma } from '~/server/db/client';
 import type { User } from 'next-auth';
 import { comparePassword } from '~/server/utils/auth/password';
+import * as Sentry from '@sentry/nextjs';
 
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 const TWENTY_FOUR_HOURS = 24 * 60 * 60;
@@ -140,6 +141,7 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
               username: user.name,
             };
           } catch (error) {
+            Sentry.captureException(error);
             console.log('Authorize error:', error);
             return null;
           }

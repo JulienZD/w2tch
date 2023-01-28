@@ -5,6 +5,7 @@ import { zInvite, createInviteUrl } from '~/models/watchlistInvite';
 import { getWatchlistInviteByCode } from '~/server/data/watchlist/invite/queries';
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { protectedProcedure, publicProcedure, router } from '../trpc';
+import * as Sentry from '@sentry/nextjs';
 
 export const inviteRouter = router({
   byCode: publicProcedure.input(z.object({ code: z.string() })).query(async ({ ctx, input }) => {
@@ -59,6 +60,7 @@ export const inviteRouter = router({
               continue;
             }
           }
+          Sentry.captureException(error);
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'An unexpected error happened' });
         }
       }

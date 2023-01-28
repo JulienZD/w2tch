@@ -4,6 +4,7 @@ import { z, ZodError } from 'zod';
 import { profileSchema } from '~/models/user';
 import { protectedProcedure, router } from '../trpc';
 import { comparePassword, hashPassword } from '~/server/utils/auth/password';
+import * as Sentry from '@sentry/nextjs';
 
 export const userRouter = router({
   settings: protectedProcedure.query(({ ctx }) => {
@@ -57,6 +58,7 @@ export const userRouter = router({
             });
           }
 
+          Sentry.captureException(error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Something went wrong',
