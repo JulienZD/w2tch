@@ -7,7 +7,11 @@ import { ExtraErrorData as ExtraErrorDataIntegration } from '@sentry/integration
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 
-if (process.env.NODE_ENV !== 'development' && SENTRY_DSN) {
+if (
+  process.env.NODE_ENV === 'production' &&
+  (process.env.VERCEL_ENV === 'production' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'production') &&
+  SENTRY_DSN
+) {
   Sentry.init({
     dsn: SENTRY_DSN,
     tracesSampleRate: 0.2,
