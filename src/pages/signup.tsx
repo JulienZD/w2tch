@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { useRedirectIfAuth } from '~/hooks/useRedirectIfAuth';
 import { signupSchema } from '~/models/auth/signup';
-import { getFormOrMutationError } from '~/utils/form/get-errors';
+import { getFormOrMutationErrors } from '~/utils/form/get-errors';
 import { trpc } from '~/utils/trpc';
 
 const Signup: NextPage = () => {
@@ -36,17 +36,14 @@ const Signup: NextPage = () => {
 
   const handleSignup = handleSubmit((data) => signup.mutate(data));
   const errors = {
-    name: getFormOrMutationError('name', error, signup),
-    email:
-      getFormOrMutationError('email', error, signup) ?? signup.error?.data?.code === 'CONFLICT'
-        ? 'Email already in use'
-        : undefined,
-    password: getFormOrMutationError('password', error, signup),
+    ...getFormOrMutationErrors(error, signup),
     unknown:
       signup.error?.data?.code && !['BAD_REQUEST', 'CONFLICT'].includes(signup.error?.data?.code)
         ? signup.error?.message ?? 'An unknown error occurred'
         : undefined,
   };
+
+  errors.email ??= signup.error?.data?.code === 'CONFLICT' ? 'Email already in use' : undefined;
 
   return (
     <div className="prose grid h-full place-content-center">

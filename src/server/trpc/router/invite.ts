@@ -13,7 +13,7 @@ export const inviteRouter = router({
 
     return {
       watchlistName: invite.watchlist.name,
-      invitee: invite.watchlist.owner.name as string, // This is never not set
+      invitee: invite.watchlist.owner.name,
       watchlistId: invite.watchlistId,
     };
   }),

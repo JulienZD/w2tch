@@ -1,8 +1,8 @@
 import { signupSchema } from '~/models/auth/signup';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
-import bcrypt from 'bcryptjs';
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { hashPassword } from '~/server/utils/auth/password';
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
@@ -13,7 +13,7 @@ export const authRouter = router({
   }),
   signup: publicProcedure.input(signupSchema).mutation(async ({ ctx, input }) => {
     const { name, email, password } = input;
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await hashPassword(password);
 
     try {
       await ctx.prisma.user.create({
