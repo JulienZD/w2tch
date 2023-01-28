@@ -15,8 +15,12 @@ export const SEO: React.FC<SEOProps> = ({ title, description }) => {
     <Head>
       <title>{pageTitle}</title>
       <meta property="og:title" content={pageTitle} />
-      <meta name="description" content={description} />
-      <meta property="og:description" content={description} />
+      {description && (
+        <>
+          <meta name="description" content={description} />
+          <meta property="og:description" content={description} />
+        </>
+      )}
     </Head>
   );
 };
