@@ -28,7 +28,7 @@ const AccountSettings: NextPage = () => {
 
   return (
     <div className="prose">
-      <h1 className="mb-4">Account Settings</h1>
+      <h1 className="mb-8">Account Settings</h1>
 
       {userSettings.data && <AccountSettingsForm user={userSettings.data} />}
       <p className="text-sm">This account was created on {dateFormatter.format(userSettings.data?.createdAt)}.</p>
