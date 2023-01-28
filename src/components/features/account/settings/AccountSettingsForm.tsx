@@ -47,9 +47,11 @@ const hasUserDataChanged = (data: z.infer<typeof zAccountInfo>, user: User) => {
 };
 
 export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }) => {
+  const trpcUtil = trpc.useContext();
   const updateAccount = trpc.me.updateAccount.useMutation({
     onSuccess: async (_, updated) => {
       await signIn('update-user', { user: updated, redirect: false });
+      await trpcUtil.me.settings.invalidate();
 
       form.resetField('password');
       form.resetField('confirmPassword');
