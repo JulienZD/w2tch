@@ -1,13 +1,14 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Dialog, Transition } from '@headlessui/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Fragment, useState } from 'react';
-import { trpc } from '~/utils/trpc';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { ClipboardCopy } from '~/components/util/ClipboardCopy';
-import { expiryOptions, expiryOptionsInHours, zInvite } from '~/models/watchlistInvite';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { expiryOptions, zInvite } from '~/models/watchlistInvite';
+import { trpc } from '~/utils/trpc';
 import { InvitesTable } from './InvitesTable';
+import * as Sentry from '@sentry/nextjs';
 
 export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlistId }) => {
   const modal = useModal();
@@ -17,9 +18,10 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
 
   const [inviteLink, setInviteLink] = useState('');
 
+  const [canSubmit, setCanSubmit] = useState(true);
+
   const form = useForm<z.infer<typeof zInvite>>({
     defaultValues: {
-      expiresAfterHours: expiryOptionsInHours[0],
       hasUnlimitedUsages: true,
       maxUses: 5,
     },
@@ -29,6 +31,8 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
   const hasUnlimitedUses = form.watch('hasUnlimitedUsages');
 
   const handleInvite = form.handleSubmit(async (data) => {
+    if (invite.isLoading) return;
+
     try {
       const result = await invite.mutateAsync({
         ...data,
@@ -38,11 +42,17 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
       if (!result) {
         return;
       }
-      await trpcUtil.watchlist.invitesById.invalidate({ watchlistId });
+
       setInviteLink(result.inviteCode);
+      setCanSubmit(false);
+
+      await trpcUtil.watchlist.invitesById.invalidate({ watchlistId });
     } catch (error) {
-      // TODO: idk
-      console.error(error);
+      Sentry.captureException(error);
+    } finally {
+      setTimeout(() => {
+        setCanSubmit(true);
+      }, 1000);
     }
   });
 
@@ -131,7 +141,11 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                   <button className="btn-sm btn" onClick={modal.remove}>
                     Cancel
                   </button>
-                  <button className="btn-primary btn-sm btn" disabled={invite.isLoading} onClick={handleInvite}>
+                  <button
+                    className={`btn-primary btn-sm btn ${invite.isLoading ? 'loading' : ''}`}
+                    disabled={!canSubmit}
+                    onClick={handleInvite}
+                  >
                     Create
                   </button>
                 </div>
