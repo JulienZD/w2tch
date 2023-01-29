@@ -53,9 +53,11 @@ export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }
       await signIn('update-user', { user: updated, redirect: false });
       await trpcUtil.me.settings.invalidate();
 
-      form.resetField('password');
-      form.resetField('confirmPassword');
-      form.resetField('currentPassword');
+      form.reset({
+        password: '',
+        confirmPassword: '',
+        currentPassword: '',
+      });
     },
   });
 
