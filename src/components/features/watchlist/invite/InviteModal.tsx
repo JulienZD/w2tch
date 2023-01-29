@@ -48,7 +48,7 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
 
   return (
     <Transition appear show={modal.visible} as={Fragment}>
-      <Dialog as="div" className="relative z-50" open={modal.visible} onClose={modal.hide}>
+      <Dialog as="div" className="relative z-50" open={modal.visible} onClose={modal.remove}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -128,7 +128,7 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
                 </form>
 
                 <div className="mt-6 flex justify-between">
-                  <button className="btn-sm btn" onClick={modal.hide}>
+                  <button className="btn-sm btn" onClick={modal.remove}>
                     Cancel
                   </button>
                   <button className="btn-primary btn-sm btn" disabled={invite.isLoading} onClick={handleInvite}>
