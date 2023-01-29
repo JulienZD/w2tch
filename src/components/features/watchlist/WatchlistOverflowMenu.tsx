@@ -68,10 +68,10 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-[60] mt-1 w-60 origin-top-right divide-y divide-base-200 rounded-md bg-base-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="absolute right-0 z-[60] mt-1 w-40 origin-top-right divide-y divide-base-200 rounded-md bg-base-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <Menu.Item>
             {({ active }) => {
-              const label = `Convert to ${watchlist.isVisibleToPublic ? 'Private' : 'Public'} watchlist`;
+              const label = `Mark as ${watchlist.isVisibleToPublic ? 'Private' : 'Public'}`;
               const Icon = watchlist.isVisibleToPublic ? EyeSlashIcon : EyeIcon;
 
               return (
@@ -97,7 +97,7 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
               >
                 <>
                   <PencilIcon className="h-5 w-5" />
-                  <span>Edit watchlist</span>
+                  <span>Edit</span>
                 </>
               </button>
             )}
@@ -112,7 +112,7 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
               >
                 <>
                   <TrashIcon className="h-5 w-5 text-error" />
-                  <span>Delete watchlist</span>
+                  <span>Delete</span>
                 </>
               </button>
             )}
