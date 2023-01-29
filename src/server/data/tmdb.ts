@@ -8,6 +8,7 @@ import {
   zTMDBTvShowDetailsResult,
   zTMDBTVShowPaginatedSearchResult,
 } from './tmdb/models';
+import * as Sentry from '@sentry/nextjs';
 
 const buildUrl = (path: string, queryParams: Record<string, string>) => {
   const url = new URL(`${env.MOVIEDB_API_V3_URL}/${path}`);
@@ -39,12 +40,17 @@ export const findTMDBMovie = async (movieId: string) => {
   const url = buildUrl(`movie/${movieId}`, {});
   const response = await fetch(url);
   if (!response.ok) {
+    await captureTMDBApiError(response, url);
     return null;
   }
 
   const parseResult = zTMDBMovieDetailsResult.safeParse(await response.json());
 
   if (!parseResult.success) {
+    Sentry.captureException(new Error('Failed to parse movie find response', { cause: parseResult.error }), {
+      extra: { movieId },
+      tags: { type: 'tmdb' },
+    });
     console.log('Failed to parse movie find response');
     return null;
   }
@@ -52,16 +58,21 @@ export const findTMDBMovie = async (movieId: string) => {
   return parseResult.data;
 };
 
-export const findTMDBTvShow = async (movieId: string) => {
-  const url = buildUrl(`tv/${movieId}`, {});
+export const findTMDBTvShow = async (tvShowId: string) => {
+  const url = buildUrl(`tv/${tvShowId}`, {});
   const response = await fetch(url);
   if (!response.ok) {
+    await captureTMDBApiError(response, url);
     return null;
   }
 
   const parseResult = zTMDBTvShowDetailsResult.safeParse(await response.json());
 
   if (!parseResult.success) {
+    Sentry.captureException(new Error('Failed to parse TV show find response', { cause: parseResult.error }), {
+      extra: { tvShowId },
+      tags: { type: 'tmdb' },
+    });
     console.log('Failed to parse tv show find response');
     return null;
   }
@@ -73,12 +84,18 @@ export const searchTMDBTvShows = async (query: string) => {
   const url = buildUrl('search/tv', { query });
   const response = await fetch(url);
   if (!response.ok) {
+    await captureTMDBApiError(response, url);
     return [];
   }
 
   const parseResult = zTMDBTVShowPaginatedSearchResult.safeParse(await response.json());
 
   if (!parseResult.success) {
+    Sentry.captureException(new Error('Failed to parse TV show search response', { cause: parseResult.error }), {
+      extra: { query },
+      tags: { type: 'tmdb' },
+    });
+
     console.log('Failed to parse tv show search response');
     return [];
   }
@@ -98,12 +115,17 @@ export const searchTMDBMovies = async (query: string) => {
   const url = buildUrl('search/movie', { query });
   const response = await fetch(url);
   if (!response.ok) {
+    await captureTMDBApiError(response, url);
     return [];
   }
 
   const parseResult = zTMDBMoviePaginatedSearchResult.safeParse(await response.json());
 
   if (!parseResult.success) {
+    Sentry.captureException(new Error('Failed to parse movie search response', { cause: parseResult.error }), {
+      extra: { query },
+      tags: { type: 'tmdb' },
+    });
     console.log('Failed to parse movie search response');
     return [];
   }
@@ -139,4 +161,19 @@ const mapTvShowToEntry = (tvShow: z.infer<typeof zTMDBTvShowDetailsResult>) => {
     rating: tvShow.vote_average,
     runtime: tvShow.episode_run_time[0] ?? 0,
   };
+};
+
+const captureTMDBApiError = async (response: Response, url: URL, extra: Record<string, unknown> = {}) => {
+  const urlCopy = new URL(url.toString());
+  urlCopy.searchParams.delete('api_key');
+
+  Sentry.captureException(new Error('TMDB API responded with a non-200 status code'), {
+    extra: {
+      requestUrl: urlCopy,
+      statusCode: response.status,
+      responseText: await response.text().catch(() => 'Failed to read response text'),
+      ...extra,
+    },
+    tags: { type: 'tmdb' },
+  });
 };

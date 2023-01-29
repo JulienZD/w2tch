@@ -158,8 +158,8 @@ export const zTMDBTvShowDetailsResult = z.object({
       origin_country: z.string(),
     })
     .array(),
-  number_of_episodes: z.number(),
-  number_of_seasons: z.number(),
+  number_of_episodes: z.number().catch(() => 0),
+  number_of_seasons: z.number().catch(() => 0),
   origin_country: z.string().array(),
   original_language: z.string(),
   original_name: z.string(),
