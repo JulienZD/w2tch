@@ -19,7 +19,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
     Sentry.setUser({ id: session.user.id, username: session.user.name });
   }
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={session} refetchOnWindowFocus={false}>
       <ThemeContextProvider>
         <NiceModal.Provider>
           <Layout>
