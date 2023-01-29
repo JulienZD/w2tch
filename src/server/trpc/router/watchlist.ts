@@ -9,6 +9,7 @@ import { addEntryToWatchlist, zWatchListAddEntry } from '~/server/data/watchlist
 import { getWatchlistById, getWatchlistsForUser } from '~/server/data/watchlist/queries';
 import { createTRPCErrorFromDatabaseError } from '~/server/utils/errors/db';
 import { protectedProcedure, publicProcedure, router } from '../trpc';
+import * as Sentry from '@sentry/nextjs';
 
 export const watchlistRouter = router({
   all: protectedProcedure.query(({ ctx }) => getWatchlistsForUser(ctx.session.user.id, ctx.prisma)),
@@ -90,6 +91,7 @@ export const watchlistRouter = router({
       try {
         await addEntryToWatchlist(input.watchlistId, { ...tmdbEntry, type: input.type }, ctx.prisma);
       } catch (error) {
+        Sentry.captureException(error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw createTRPCErrorFromDatabaseError(error);
         }

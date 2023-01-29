@@ -6,11 +6,13 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { randomUUID } from 'crypto';
 import { getCookie, setCookie } from 'cookies-next';
 import { encode, decode } from 'next-auth/jwt';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { env } from '~/env/server.mjs';
 import { prisma } from '~/server/db/client';
 import type { User } from 'next-auth';
 import { comparePassword } from '~/server/utils/auth/password';
+import * as Sentry from '@sentry/nextjs';
+import { traceDetailedCatchAllRoute } from '~/server/utils/tracing/catch-all-routes';
 
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 const TWENTY_FOUR_HOURS = 24 * 60 * 60;
@@ -140,6 +142,7 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
               username: user.name,
             };
           } catch (error) {
+            Sentry.captureException(error);
             console.log('Authorize error:', error);
             return null;
           }
@@ -152,8 +155,16 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
   return authOptions;
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler: NextApiHandler = (req, res) => {
+  traceDetailedCatchAllRoute({
+    route: '/api/auth/[...nextauth]',
+    replaceSearchValue: '[...nextauth]',
+    replaceValue: (req.query.nextauth as string[]).join('/'),
+  });
+
   const authOptions = createAuthOptions(req, res);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return await NextAuth(req, res, authOptions);
-}
+
+  return NextAuth(req, res, authOptions);
+};
+
+export default handler;

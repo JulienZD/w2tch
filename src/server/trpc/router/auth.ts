@@ -3,6 +3,7 @@ import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { hashPassword } from '~/server/utils/auth/password';
+import * as Sentry from '@sentry/nextjs';
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
@@ -31,6 +32,7 @@ export const authRouter = router({
         });
       }
 
+      Sentry.captureException(error);
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Something went wrong',

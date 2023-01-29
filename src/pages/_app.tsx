@@ -11,8 +11,12 @@ import { ThemeContextProvider } from '~/contexts/ThemeProvider';
 import NiceModal from '@ebay/nice-modal-react';
 import { SEO } from '~/components/common/SEO';
 import { hasSSRSeoProps } from '~/utils/seo';
+import * as Sentry from '@sentry/nextjs';
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
+  if (session) {
+    Sentry.setUser({ id: session.user.id, username: session.user.name });
+  }
   return (
     <SessionProvider session={session}>
       <ThemeContextProvider>
