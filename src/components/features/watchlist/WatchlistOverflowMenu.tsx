@@ -3,7 +3,7 @@ import { EllipsisHorizontalIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/
 import { Fragment, useCallback } from 'react';
 import { trpc } from '~/utils/trpc';
 
-export const WatchlistContextMenu: React.FC<{ watchlistId: string }> = ({ watchlistId }) => {
+export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watchlistId }) => {
   const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
   const trpcUtil = trpc.useContext();
   const editWatchlist = trpc.watchlist.edit.useMutation({

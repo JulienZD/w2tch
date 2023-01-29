@@ -7,7 +7,7 @@ import { type RouterOutputs, trpc } from '~/utils/trpc';
 type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables'][number];
 
 // Component is memoized to prevent re-rendering every item when one item is updated
-export const WatchlistEntryContextMenu: React.FC<{
+export const WatchlistEntryOverflowMenu: React.FC<{
   item: WatchlistItem & Pick<WatchablesOnWatchlists, 'watchlistId'>;
 }> = memo(
   ({ item }) => {
@@ -122,4 +122,4 @@ export const WatchlistEntryContextMenu: React.FC<{
   (prev, next) => prev.item.id === next.item.id && prev.item.seenOn === next.item.seenOn
 );
 
-WatchlistEntryContextMenu.displayName = 'WatchlistEntryContextMenu';
+WatchlistEntryOverflowMenu.displayName = 'WatchlistEntryContextMenu';
