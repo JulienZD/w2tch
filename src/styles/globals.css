@@ -35,3 +35,20 @@ html {
 #__next {
   @apply h-full;
 }
+
+/* NProgress */
+html[data-theme='winter'] #nprogress div[role='bar'] {
+  @apply from-blue-300 to-blue-500;
+}
+
+html[data-theme='night'] #nprogress div[role='bar'] {
+  @apply from-blue-500 to-blue-700;
+}
+
+#nprogress .peg {
+  @apply block absolute right-0 w-[100px] h-full opacity-100;
+  --nprogress-shadow-color: #1c89c8;
+
+  box-shadow: 0 0 10px var(--nprogress-shadow-color), 0 0 5px var(--nprogress-shadow-color);
+  transform: rotate(3deg) translate(0px, -4px);
+}
