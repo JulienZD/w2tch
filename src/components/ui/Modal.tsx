@@ -9,7 +9,7 @@ const buttonColors = {
   danger: 'bg-red-700 hover:bg-red-900 focus-visible:outline-red-700',
 };
 
-type ModalProps = {
+export type ModalProps = {
   title: string;
   description?: string;
   primaryBtnLabel?: string;

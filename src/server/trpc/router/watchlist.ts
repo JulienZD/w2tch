@@ -77,6 +77,16 @@ export const watchlistRouter = router({
         },
       });
     }),
+  delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+    const watchlist = await getWatchlistById(
+      { id: input.id, userId: ctx.session.user.id, ownerOnly: true },
+      ctx.prisma
+    );
+
+    if (!watchlist) throw new TRPCError({ code: 'NOT_FOUND', message: 'Watchlist not found' });
+
+    await ctx.prisma.watchlist.delete({ where: { id: input.id } });
+  }),
   addItem: protectedProcedure
     .input(zWatchListAddEntry.extend({ watchlistId: z.string() }))
     .mutation(async ({ input, ctx }) => {

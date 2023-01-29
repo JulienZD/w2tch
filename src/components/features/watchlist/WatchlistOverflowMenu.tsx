@@ -1,6 +1,9 @@
+import NiceModal from '@ebay/nice-modal-react';
 import { Menu, Transition } from '@headlessui/react';
-import { EllipsisHorizontalIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/20/solid';
+import { EllipsisHorizontalIcon, EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/react/20/solid';
+import { useRouter } from 'next/router';
 import { Fragment, useCallback } from 'react';
+import { ConfirmDeleteModal } from '~/components/common/modals/ConfirmDeleteModal';
 import { trpc } from '~/utils/trpc';
 
 export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watchlistId }) => {
@@ -12,12 +15,12 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
     },
   });
 
-  // const router = useRouter();
-  // const removeWatchlist = trpc.watchlist.remove.useMutation({
-  //   onSuccess: () => {
-  //     return router.push('/dashboard');
-  //   },
-  // });
+  const router = useRouter();
+  const removeWatchlist = trpc.watchlist.delete.useMutation({
+    onSuccess: () => {
+      return router.push('/dashboard');
+    },
+  });
 
   const handleChangeVisibility = useCallback(
     (newValue: boolean) => {
@@ -29,11 +32,17 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
     [watchlistId, editWatchlist]
   );
 
-  // const handleRemoveWatchlist = useCallback(() => {
-  //   removeWatchlist.mutate({
-  //     id: watchlistId,
-  //   });
-  // }, [removeWatchlist, watchlistId]);
+  const handleRemoveWatchlist = useCallback(() => {
+    return NiceModal.show(ConfirmDeleteModal, {
+      title: 'Delete watchlist',
+      message: 'Are you sure you want to delete this watchlist?',
+      deleteFn: () => {
+        removeWatchlist.mutate({
+          id: watchlistId,
+        });
+      },
+    });
+  }, [removeWatchlist, watchlistId]);
 
   if (!watchlist) return null;
 
@@ -71,11 +80,10 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
               );
             }}
           </Menu.Item>
-          {/* <Menu.Item>
+          <Menu.Item>
             {({ active }) => (
-              // TODO: Implement delete watchlist + Delete confirmation
               <button
-                // onClick={handleRemoveWatchlist}
+                onClick={handleRemoveWatchlist}
                 className={`${
                   active ? 'bg-base-200 text-base-content' : 'text-base-content'
                 } group flex w-full items-center gap-x-2 rounded-md border-t border-t-current px-2 py-2 text-sm`}
@@ -86,7 +94,7 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
                 </>
               </button>
             )}
-          </Menu.Item> */}
+          </Menu.Item>
         </Menu.Items>
       </Transition>
     </Menu>
