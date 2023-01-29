@@ -6,7 +6,7 @@ import pluralize from 'pluralize';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { InviteModal } from '~/components/features/watchlist/invite/InviteModal';
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
-import { WatchlistContextMenu } from '~/components/features/watchlist/WatchlistContextMenu';
+import { WatchlistOverflowMenu } from '~/components/features/watchlist/WatchlistOverflowMenu';
 import { Pluralize } from '~/components/util/Pluralize';
 import { env } from '~/env/server.mjs';
 import type { WithSEOProps } from '~/types/ssr';
@@ -62,7 +62,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
               <Pluralize count={watchlist.watchableCount} word="entry" />
             </span>
           </div>
-          {!readOnly && watchlist.isOwner && <WatchlistContextMenu watchlistId={watchlist.id} />}
+          {!readOnly && watchlist.isOwner && <WatchlistOverflowMenu watchlistId={watchlist.id} />}
         </div>
       </div>
 

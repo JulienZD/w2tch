@@ -1,7 +1,7 @@
 import NiceModal from '@ebay/nice-modal-react';
 import type { GetStaticProps, NextPage } from 'next';
+import { ConfirmDeleteModal } from '~/components/common/modals/ConfirmDeleteModal';
 import { AccountSettingsForm } from '~/components/features/account/settings/AccountSettingsForm';
-import { ConfirmDeleteModal } from '~/components/features/account/settings/ConfirmDeleteModal';
 import { useRequiresAuth } from '~/hooks/useRequiresAuth';
 import type { SEOProps } from '~/types/ssr';
 import { trpc } from '~/utils/trpc';
@@ -42,7 +42,10 @@ const AccountSettings: NextPage = () => {
           className="btn mt-4 bg-red-800 text-white hover:bg-red-900 focus-visible:outline-red-800"
           onClick={() => {
             return NiceModal.show(ConfirmDeleteModal, {
-              onDelete: async () => {
+              title: 'Delete Account',
+              message: 'Are you sure you want to delete your account?',
+              buttonLabel: 'Delete my account',
+              deleteFn: async () => {
                 await deleteAccount.mutateAsync();
                 window.location.href = '/';
               },

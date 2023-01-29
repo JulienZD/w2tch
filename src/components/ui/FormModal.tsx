@@ -1,6 +1,7 @@
 import { useModal } from '@ebay/nice-modal-react';
-import { Transition, Dialog } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useCallback } from 'react';
+import type { UseFormHandleSubmit } from 'react-hook-form';
 
 const buttonColors = {
   primary: 'btn-primary',
@@ -9,24 +10,28 @@ const buttonColors = {
   danger: 'bg-red-700 hover:bg-red-900 focus-visible:outline-red-700',
 };
 
-export type ModalProps = {
+type SubmitHandler = ReturnType<UseFormHandleSubmit<Record<string, unknown>>>;
+
+export type FormModalProps = {
   title: string;
   description?: string;
-  primaryBtnLabel?: string;
-  primaryBtnOnClick?: () => Promise<void> | void;
+  submitBtnLabel?: string;
+  submitBtnColor?: keyof typeof buttonColors;
+  isLoading?: boolean;
+  onSubmit: SubmitHandler;
   onCancel?: () => Promise<void> | void;
   children?: React.ReactNode;
-  primaryBtnColor?: keyof typeof buttonColors;
 };
 
-export const Modal: React.FC<ModalProps> = ({
+export const FormModal: React.FC<FormModalProps> = ({
   title,
   onCancel,
   description,
   children,
-  primaryBtnOnClick,
-  primaryBtnLabel = 'OK',
-  primaryBtnColor = 'primary',
+  onSubmit,
+  submitBtnLabel = 'Save',
+  submitBtnColor = 'primary',
+  isLoading = false,
 }) => {
   const modal = useModal();
 
@@ -34,19 +39,24 @@ export const Modal: React.FC<ModalProps> = ({
     if (onCancel) {
       await onCancel();
     }
-    await modal.hide();
+    modal.remove();
   }, [onCancel, modal]);
 
-  const handlePrimaryAction = useCallback(async () => {
-    if (primaryBtnOnClick) {
-      await primaryBtnOnClick();
-    }
-    await modal.hide();
-  }, [primaryBtnOnClick, modal]);
+  const handleSubmit = useCallback<SubmitHandler>(
+    async (event) => {
+      try {
+        await onSubmit(event);
+        modal.remove();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [onSubmit, modal]
+  );
 
   return (
     <Transition appear show={modal.visible} as={Fragment}>
-      <Dialog as="div" className="relative z-50" open={modal.visible} onClose={modal.hide}>
+      <Dialog as="div" className="relative z-50" open={modal.visible} onClose={modal.remove}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -76,16 +86,21 @@ export const Modal: React.FC<ModalProps> = ({
 
                 {description && <p>{description}</p>}
 
-                {children}
+                <form onSubmit={handleSubmit}>
+                  {children}
 
-                <div className="mt-6 flex items-center justify-end gap-x-4">
-                  <button className="btn-ghost btn" onClick={handleCancel}>
-                    Cancel
-                  </button>
-                  <button className={`btn ${buttonColors[primaryBtnColor]}`} onClick={handlePrimaryAction}>
-                    {primaryBtnLabel ?? 'OK'}
-                  </button>
-                </div>
+                  <div className="mt-6 flex items-center justify-end gap-x-4">
+                    <button type="button" className="btn-ghost btn" onClick={handleCancel}>
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className={`btn ${buttonColors[submitBtnColor]} ${isLoading ? 'loading' : ''}`}
+                    >
+                      {submitBtnLabel}
+                    </button>
+                  </div>
+                </form>
               </Dialog.Panel>
             </Transition.Child>
           </div>
