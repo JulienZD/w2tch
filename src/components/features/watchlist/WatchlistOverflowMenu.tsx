@@ -4,20 +4,20 @@ import { EllipsisHorizontalIcon, EyeIcon, EyeSlashIcon, PencilIcon, TrashIcon } 
 import { useRouter } from 'next/router';
 import { Fragment, useCallback } from 'react';
 import { ConfirmDeleteModal } from '~/components/common/modals/ConfirmDeleteModal';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 import { EditWatchlistModal } from './EditWatchlistModal';
 
 export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watchlistId }) => {
-  const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
-  const trpcUtil = trpc.useContext();
-  const editWatchlist = trpc.watchlist.edit.useMutation({
+  const { data: watchlist } = api.watchlist.byId.useQuery({ id: watchlistId });
+  const apiUtil = api.useContext();
+  const editWatchlist = api.watchlist.edit.useMutation({
     onSuccess: async () => {
-      return trpcUtil.watchlist.byId.invalidate({ id: watchlistId });
+      return apiUtil.watchlist.byId.invalidate({ id: watchlistId });
     },
   });
 
   const router = useRouter();
-  const removeWatchlist = trpc.watchlist.delete.useMutation({
+  const removeWatchlist = api.watchlist.delete.useMutation({
     onSuccess: () => {
       return router.push('/dashboard');
     },

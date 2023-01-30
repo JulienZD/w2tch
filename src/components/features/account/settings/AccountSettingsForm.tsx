@@ -2,7 +2,7 @@ import type { User } from '@prisma/client';
 import { z } from 'zod';
 import { useTrpcForm } from '~/hooks/useTrpcForm';
 import { profileSchema } from '~/models/user';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 const zAccountInfo = z
   .object({
@@ -46,7 +46,7 @@ const hasUserDataChanged = (data: z.infer<typeof zAccountInfo>, user: User) => {
 };
 
 export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }) => {
-  const updateAccount = trpc.me.updateAccount.useMutation({
+  const updateAccount = api.me.updateAccount.useMutation({
     onSuccess: () => {
       // Next Auth doesn't provide an easy way to update the session with new data, easiest way is to reload the page
       window.location.reload();

@@ -5,7 +5,7 @@ import { Rating } from '~/components/ui/Rating';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useTMDBSearch } from '~/hooks/useTMDBSearch';
 import type { TMDBEntryType } from '~/server/data/tmdb/models';
-import type { RouterOutputs } from '~/utils/trpc';
+import type { RouterOutputs } from '~/utils/api';
 
 type SearchResult = RouterOutputs['search']['tmdb']['search'][number];
 

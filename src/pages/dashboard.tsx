@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SEO } from '~/components/common/SEO';
 import { Pluralize } from '~/components/util/Pluralize';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 const Dashboard: NextPage = () => {
-  const { data: watchlists } = trpc.watchlist.all.useQuery();
+  const { data: watchlists } = api.watchlist.all.useQuery();
   const router = useRouter();
 
   return (

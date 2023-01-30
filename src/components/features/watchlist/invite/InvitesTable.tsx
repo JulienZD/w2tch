@@ -1,5 +1,5 @@
 import { shortEnglishHumanizer } from '~/utils/humanizeDuration';
-import type { RouterOutputs } from '~/utils/trpc';
+import type { RouterOutputs } from '~/utils/api';
 
 interface InvitesTableProps {
   invites: NonNullable<RouterOutputs['watchlist']['invitesById']>;

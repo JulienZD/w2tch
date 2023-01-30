@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { WithSEOProps } from '~/types/ssr';
 import { createSSGHelper } from '~/utils/ssg';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 const WatchlistInviteByCode: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
   code,
@@ -13,7 +13,7 @@ const WatchlistInviteByCode: NextPage<InferGetServerSidePropsType<typeof getServ
 }) => {
   const router = useRouter();
   const { data: session } = useSession();
-  const join = trpc.invite.join.useMutation({
+  const join = api.invite.join.useMutation({
     onSuccess: ({ watchlistId }) => {
       return router.push(`/watchlist/${watchlistId}`);
     },

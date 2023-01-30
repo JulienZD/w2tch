@@ -2,7 +2,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { EllipsisVerticalIcon, EyeSlashIcon, EyeIcon, TrashIcon } from '@heroicons/react/20/solid';
 import type { WatchablesOnWatchlists } from '@prisma/client';
 import { memo, useCallback, Fragment } from 'react';
-import { type RouterOutputs, trpc } from '~/utils/trpc';
+import { type RouterOutputs, api } from '~/utils/api';
 
 type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables'][number];
 
@@ -11,14 +11,14 @@ export const WatchlistEntryOverflowMenu: React.FC<{
   item: WatchlistItem & Pick<WatchablesOnWatchlists, 'watchlistId'>;
 }> = memo(
   ({ item }) => {
-    const trpcUtil = trpc.useContext();
+    const apiUtil = api.useContext();
 
-    const editWatchlistItem = trpc.watchlist.editItem.useMutation({
+    const editWatchlistItem = api.watchlist.editItem.useMutation({
       onMutate: (newItem) => {
-        const previousData = trpcUtil.watchlist.byId.getData({ id: newItem.watchlistId });
+        const previousData = apiUtil.watchlist.byId.getData({ id: newItem.watchlistId });
         if (!previousData) return previousData;
 
-        trpcUtil.watchlist.byId.setData(
+        apiUtil.watchlist.byId.setData(
           {
             id: newItem.watchlistId,
           },
@@ -39,14 +39,14 @@ export const WatchlistEntryOverflowMenu: React.FC<{
       },
       onError: (_, newItem, context) => {
         if (context?.previousData) {
-          trpcUtil.watchlist.byId.setData({ id: newItem.watchlistId }, context.previousData);
+          apiUtil.watchlist.byId.setData({ id: newItem.watchlistId }, context.previousData);
         }
       },
     });
 
-    const removeWatchlistItem = trpc.watchlist.removeItem.useMutation({
+    const removeWatchlistItem = api.watchlist.removeItem.useMutation({
       onSuccess: async () => {
-        await trpcUtil.watchlist.byId.invalidate({ id: item.watchlistId });
+        await apiUtil.watchlist.byId.invalidate({ id: item.watchlistId });
       },
     });
 

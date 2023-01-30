@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import type { zWatchListAddEntry } from '~/server/data/watchlist/mutations';
-import { type RouterOutputs, trpc } from '~/utils/trpc';
+import { type RouterOutputs, api } from '~/utils/api';
 import { TMDBAutocomplete } from './TMDBAutocomplete';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { Rating } from '~/components/ui/Rating';
@@ -25,19 +25,19 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
       type: DBWatchableType.MOVIE,
     },
   });
-  const trpcUtil = trpc.useContext();
+  const apiUtil = api.useContext();
   const selectedId = form.watch('id');
   const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
 
-  const addItem = trpc.watchlist.addItem.useMutation({
+  const addItem = api.watchlist.addItem.useMutation({
     onSuccess: async () => {
       form.reset();
       setQuery('');
       setSelectedItem(null);
-      return trpcUtil.watchlist.byId.invalidate({ id: watchlistId });
+      return apiUtil.watchlist.byId.invalidate({ id: watchlistId });
     },
   });
-  const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
+  const { data: watchlist } = api.watchlist.byId.useQuery({ id: watchlistId });
 
   const addMovie = form.handleSubmit((movie) => {
     if (addItem.isLoading || !movie.id) return;

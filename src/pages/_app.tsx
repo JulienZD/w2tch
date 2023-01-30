@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import * as Sentry from '@sentry/nextjs';
 import NiceModal from '@ebay/nice-modal-react';
 
-import { trpc } from '../utils/trpc';
+import { api } from '../utils/api';
 
 import '../styles/globals.css';
 import { Layout } from '~/components/ui/Layout';
@@ -38,4 +38,4 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
   );
 };
 
-export default trpc.withTRPC(MyApp);
+export default api.withTRPC(MyApp);

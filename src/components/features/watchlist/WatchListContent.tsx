@@ -3,7 +3,7 @@ import { Rating } from '~/components/ui/Rating';
 import { Runtime } from '~/components/ui/Runtime';
 import { WatchableType } from '~/components/ui/WatchableType';
 import { thumbnail } from '~/utils/thumbnail';
-import { type RouterOutputs } from '~/utils/trpc';
+import { type RouterOutputs } from '~/utils/api';
 import { WatchlistEntryOverflowMenu } from './WatchlistEntryOverflowMenu';
 
 type WatchlistItem = NonNullable<RouterOutputs['watchlist']['byId']>['watchables'][number];

@@ -4,10 +4,10 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { createWatchlistSchema } from '~/models/watchlist';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 export const CreateWatchlist: React.FC = () => {
-  const createWatchList = trpc.watchlist.create.useMutation();
+  const createWatchList = api.watchlist.create.useMutation();
   const { push } = useRouter();
 
   const {
