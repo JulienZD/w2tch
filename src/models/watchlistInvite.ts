@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getBaseUrl } from '~/utils/trpc';
+import { getBaseUrl } from '~/utils/api';
 
 export const expiryOptionsInHours = [1, 6, 24, 168] as const;
 

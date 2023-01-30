@@ -9,7 +9,6 @@ import { encode, decode } from 'next-auth/jwt';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { env } from '~/env/server.mjs';
 import { prisma } from '~/server/db/client';
-import type { User } from 'next-auth';
 import { comparePassword } from '~/server/utils/auth/password';
 import * as Sentry from '@sentry/nextjs';
 import { traceDetailedCatchAllRoute } from '~/server/utils/tracing/catch-all-routes';
@@ -106,16 +105,6 @@ export const createAuthOptions = (req: NextApiRequest, res: NextApiResponse): Ne
     adapter,
     secret: env.NEXTAUTH_SECRET,
     providers: [
-      // This provider is used to refresh the session token, updating any user data that may have changed.
-      CredentialsProvider({
-        id: 'update-user',
-        credentials: {},
-        // @ts-expect-error This is fine, we send an empty object, but next-auth expects a different type
-        authorize(credentials?: { user: string }) {
-          if (!credentials) return null;
-          return { user: JSON.parse(credentials.user) as User };
-        },
-      }),
       CredentialsProvider({
         credentials: {
           email: { label: 'Email', type: 'email', placeholder: 'Email' },

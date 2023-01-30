@@ -4,7 +4,7 @@ import { ConfirmDeleteModal } from '~/components/common/modals/ConfirmDeleteModa
 import { AccountSettingsForm } from '~/components/features/account/settings/AccountSettingsForm';
 import { useRequiresAuth } from '~/hooks/useRequiresAuth';
 import type { SEOProps } from '~/types/ssr';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   month: 'short',
@@ -17,12 +17,12 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 const AccountSettings: NextPage = () => {
   const { user } = useRequiresAuth();
 
-  const userSettings = trpc.me.settings.useQuery(undefined, {
+  const userSettings = api.me.settings.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
-  const deleteAccount = trpc.me.deleteAccount.useMutation();
+  const deleteAccount = api.me.deleteAccount.useMutation();
 
   if (!user || userSettings.isLoading) return null;
 

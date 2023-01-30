@@ -8,7 +8,7 @@ import type { z } from 'zod';
 import { useRedirectIfAuth } from '~/hooks/useRedirectIfAuth';
 import { signupSchema } from '~/models/auth/signup';
 import { getFormOrMutationErrors } from '~/utils/form/get-errors';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 const Signup: NextPage = () => {
   useRedirectIfAuth('/');
@@ -22,7 +22,7 @@ const Signup: NextPage = () => {
   } = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
   });
-  const signup = trpc.auth.signup.useMutation({
+  const signup = api.auth.signup.useMutation({
     onSuccess: (_, { email, password }) => {
       return signIn('credentials', {
         email,

@@ -4,18 +4,18 @@ import { FormModal } from '~/components/ui/FormModal';
 import { type ModalProps } from '~/components/ui/Modal';
 import { useTrpcForm } from '~/hooks/useTrpcForm';
 import { editWatchlistSchema } from '~/models/watchlist';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 type EditWatchlistModalProps = Pick<ModalProps, 'onCancel'> & {
   watchlistId: string;
 };
 
 export const EditWatchlistModal = NiceModal.create<EditWatchlistModalProps>(({ watchlistId, onCancel }) => {
-  const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
+  const { data: watchlist } = api.watchlist.byId.useQuery({ id: watchlistId });
 
-  const util = trpc.useContext();
+  const util = api.useContext();
 
-  const editWatchlist = trpc.watchlist.edit.useMutation({
+  const editWatchlist = api.watchlist.edit.useMutation({
     onSuccess: async () => {
       return util.watchlist.byId.invalidate({ id: watchlistId });
     },

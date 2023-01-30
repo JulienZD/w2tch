@@ -6,15 +6,15 @@ import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { ClipboardCopy } from '~/components/util/ClipboardCopy';
 import { expiryOptions, zInvite } from '~/models/watchlistInvite';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 import { InvitesTable } from './InvitesTable';
 import * as Sentry from '@sentry/nextjs';
 
 export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlistId }) => {
   const modal = useModal();
-  const trpcUtil = trpc.useContext();
-  const invite = trpc.invite.create.useMutation();
-  const existingInvites = trpc.watchlist.invitesById.useQuery({ watchlistId });
+  const apiUtil = api.useContext();
+  const invite = api.invite.create.useMutation();
+  const existingInvites = api.watchlist.invitesById.useQuery({ watchlistId });
 
   const [inviteLink, setInviteLink] = useState('');
 
@@ -46,7 +46,7 @@ export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlis
       setInviteLink(result.inviteCode);
       setCanSubmit(false);
 
-      await trpcUtil.watchlist.invitesById.invalidate({ watchlistId });
+      await apiUtil.watchlist.invitesById.invalidate({ watchlistId });
     } catch (error) {
       Sentry.captureException(error);
     } finally {

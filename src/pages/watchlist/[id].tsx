@@ -13,10 +13,10 @@ import type { WithSEOProps } from '~/types/ssr';
 import { toPossessive } from '~/utils/language';
 import { optionalSeo } from '~/utils/seo';
 import { createSSGHelper } from '~/utils/ssg';
-import { trpc } from '~/utils/trpc';
+import { api } from '~/utils/api';
 
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
-  const { data: watchlist } = trpc.watchlist.byId.useQuery({ id: watchlistId });
+  const { data: watchlist } = api.watchlist.byId.useQuery({ id: watchlistId });
 
   const openInviteModal = async () => {
     await NiceModal.show(InviteModal, {

@@ -8,8 +8,6 @@ export const PrismaError = {
   UNKNOWN: 'An unknown error occurred',
 } as const;
 
-type PrismaError = typeof PrismaError[keyof typeof PrismaError];
-
 const errorCodesMap = {
   P2002: new TRPCError({ code: 'CONFLICT', message: PrismaError.UNIQUE_CONSTRAINT }),
   P2003: new TRPCError({ code: 'NOT_FOUND', message: PrismaError.NO_RELATION_FOUND }),
