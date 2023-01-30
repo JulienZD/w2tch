@@ -1,9 +1,8 @@
 import type { User } from '@prisma/client';
-import { signIn } from 'next-auth/react';
 import { z } from 'zod';
+import { useTrpcForm } from '~/hooks/useTrpcForm';
 import { profileSchema } from '~/models/user';
 import { trpc } from '~/utils/trpc';
-import { useTrpcForm } from '~/hooks/useTrpcForm';
 
 const zAccountInfo = z
   .object({
@@ -47,17 +46,10 @@ const hasUserDataChanged = (data: z.infer<typeof zAccountInfo>, user: User) => {
 };
 
 export const AccountSettingsForm: React.FC<AccountSettingsFormProps> = ({ user }) => {
-  const trpcUtil = trpc.useContext();
   const updateAccount = trpc.me.updateAccount.useMutation({
-    onSuccess: async (_, updated) => {
-      await signIn('update-user', { user: updated, redirect: false });
-      await trpcUtil.me.settings.invalidate();
-
-      form.reset({
-        password: '',
-        confirmPassword: '',
-        currentPassword: '',
-      });
+    onSuccess: () => {
+      // Next Auth doesn't provide an easy way to update the session with new data, easiest way is to reload the page
+      window.location.reload();
     },
   });
 

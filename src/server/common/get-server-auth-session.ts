@@ -1,10 +1,10 @@
 import { type GetServerSidePropsContext } from 'next';
-import { unstable_getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 
 import { createAuthOptions } from '../../pages/api/auth/[...nextauth]';
 
 /**
- * Wrapper for unstable_getServerSession https://next-auth.js.org/configuration/nextjs
+ * Wrapper for getServerSession https://next-auth.js.org/configuration/nextjs
  * See example usage in trpc createContext or the restricted API route
  */
 export const getServerAuthSession = async (ctx: {
@@ -12,5 +12,5 @@ export const getServerAuthSession = async (ctx: {
   res: GetServerSidePropsContext['res'];
 }) => {
   const authOptions = createAuthOptions(ctx.req as never, ctx.res as never);
-  return await unstable_getServerSession(ctx.req, ctx.res, authOptions);
+  return await getServerSession(ctx.req, ctx.res, authOptions);
 };
