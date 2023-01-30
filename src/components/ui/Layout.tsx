@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { type PropsWithChildren } from 'react';
 import { TemporaryAccountAlert } from '../auth/TemporaryAccountAlert';
 import { AccountRequiredGuard } from './AccountRequiredGuard';
+import { Footer } from './Footer';
 import { Header } from './Header';
 
 const isPageWithoutHeader = (route: string) => ['/', '/login', '/signup'].includes(route);
@@ -20,7 +21,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   const bannerVisible = false; // accountRequired && !!accountExpiryDate;
 
   return (
-    <div className="h-full">
+    <div className="flex h-full flex-col items-center justify-between">
       <AccountRequiredGuard />
 
       {bannerVisible && (
@@ -29,15 +30,15 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         </div>
       )}
 
-      <div
-        className={`container relative h-full px-2 md:px-0 ${isCustomPage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}
-      >
+      <div className={`container relative px-2 md:px-0 ${isCustomPage ? '' : 'max-w-none md:mx-auto md:max-w-3xl'}`}>
         {!isPageWithoutHeader(route) && <Header visible={status === 'authenticated'} />}
 
-        <main className={`${isCustomPage ? '' : 'h-full pt-12 md:pt-40'} ${bannerVisible ? 'pb-20' : ''}`}>
+        <main className={`${isCustomPage ? '' : 'min-h-full pt-12 md:pt-40'} ${bannerVisible ? 'pb-20' : ''}`}>
           {children}
         </main>
       </div>
+
+      <Footer fixed={isCustomPage} />
     </div>
   );
 };
