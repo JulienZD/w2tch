@@ -1,6 +1,6 @@
 import NiceModal from '@ebay/nice-modal-react';
 import { Menu, Transition } from '@headlessui/react';
-import { EllipsisHorizontalIcon, EyeIcon, EyeSlashIcon, PencilIcon, TrashIcon } from '@heroicons/react/20/solid';
+import { EllipsisHorizontalIcon, EyeIcon, EyeSlashIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/20/solid';
 import { useRouter } from 'next/router';
 import { Fragment, useCallback } from 'react';
 import { ConfirmDeleteModal } from '~/components/common/modals/ConfirmDeleteModal';
@@ -96,7 +96,7 @@ export const WatchlistOverflowMenu: React.FC<{ watchlistId: string }> = ({ watch
                 } group flex w-full items-center gap-x-2 rounded-md border-t border-t-current px-2 py-2 text-sm`}
               >
                 <>
-                  <PencilIcon className="h-5 w-5" />
+                  <PencilSquareIcon className="h-5 w-5" />
                   <span>Edit</span>
                 </>
               </button>
