@@ -15,6 +15,7 @@ export const NavigationProgress: React.FC = () => {
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
+      // FIXME: Don't start progress if a query param changes
       if (url !== router.asPath) {
         NProgress.start();
       }
