@@ -39,32 +39,16 @@ export const useQueryParam = <T extends z.ZodSchema, R extends z.infer<T> | unde
   });
 
   const updateQueryParam = (value: R) => {
-    if (value) {
-      router
-        .push(
-          {
-            query: {
-              ...router.query,
-              [key]: isPrimitive(value) ? value : JSON.stringify(value),
-            },
-          },
-          undefined,
-          { shallow: true }
-        )
-        .catch(() => undefined);
-    } else {
-      const { [key]: _, ...query } = router.query;
+    const newQuery = {
+      ...router.query,
+      [key]: isPrimitive(value) ? value : JSON.stringify(value),
+    };
 
-      router
-        .push(
-          {
-            query,
-          },
-          undefined,
-          { shallow: true }
-        )
-        .catch(() => undefined);
+    if (!value) {
+      delete newQuery[key];
     }
+
+    router.push({ query: newQuery }, undefined, { shallow: true }).catch(() => undefined);
 
     setValue(value);
   };
