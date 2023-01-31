@@ -64,8 +64,8 @@ export const OverflowMenu: React.FC<OverflowMenuProps> = ({
                 >
                   <div
                     className={`${
-                      item.selected ? 'border-primary' : ''
-                    } flex w-full items-center gap-2 border-l-2 border-transparent p-2 text-left`}
+                      item.selected ? 'border-primary' : 'border-transparent'
+                    } flex w-full items-center gap-2 border-l-2 p-2 text-left`}
                   >
                     {item.icon}
                     <span>{item.label}</span>
