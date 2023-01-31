@@ -1,8 +1,8 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 import { watchlistEntryFilterSchema } from '~/models/watchlist';
 import type { RouterOutputs } from '~/utils/api';
 import { sortByDate, sortByNumberOrString } from '~/utils/collation';
-import { useQueryParam } from '../useQueryParam';
+import { useQueryParams } from '../useQueryParams';
 
 type FilterSchema = typeof watchlistEntryFilterSchema;
 type Filters = {
@@ -13,17 +13,11 @@ type Filters = {
 type Watchables = RouterOutputs['watchlist']['byId']['watchables'];
 
 export const useFilterWatchlistEntries = (watchables: Watchables) => {
-  const [type, setType] = useQueryParam('type', {
-    schema: watchlistEntryFilterSchema.type,
-  });
-  const [sort, setSort] = useQueryParam('sort', {
-    schema: watchlistEntryFilterSchema.sort,
+  const { queryParams, setQueryParams } = useQueryParams({
+    schema: z.object(watchlistEntryFilterSchema),
   });
 
-  const clearFilters = () => {
-    setType(undefined);
-    setSort(undefined);
-  };
+  const { type, sort } = queryParams;
 
   // TODO: See if performance can be improved by e.g. memoization - useMemo doesn't work as well since the params
   // are objects
@@ -31,10 +25,10 @@ export const useFilterWatchlistEntries = (watchables: Watchables) => {
 
   return {
     type,
-    setType,
     sort,
-    setSort,
-    clearFilters,
+    setType: (type: Filters['type']) => setQueryParams({ type }),
+    setSort: (sort: Filters['sort']) => setQueryParams({ sort }),
+    clearFilters: () => setQueryParams(undefined),
     filteredWatchables,
   };
 };

@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { z } from 'zod';
-import { isPrimitive, zPrimitive, zStringifiedJson } from '~/utils/validation';
-
-const zQueryParam = z.union([zStringifiedJson, zPrimitive.array(), zPrimitive]).optional();
+import type { z } from 'zod';
+import { zQueryParam } from '~/models/queryParams';
+import { isPrimitive } from '~/utils/validation';
+// This import is used to be able to link to it in the docs
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { useQueryParams } from './useQueryParams';
 
 type UseQueryParamArgs<T extends z.ZodSchema> = {
   schema: T;
@@ -11,7 +13,11 @@ type UseQueryParamArgs<T extends z.ZodSchema> = {
 };
 
 /**
- * A hook to get and update a query param with Zod validation
+ * A hook to get and update a query param with Zod validation.
+ *
+ * NOTE: This hook doesn't work properly if used to track multiple query params in one component / hook.
+ * Setting multiple query params at the same time may result in one or more of query params remaining in the URL,
+ * but not the internal state. If using multiple query params, use {@link useQueryParams} instead.
  *
  * @param key The query param key
  * @param options.schema A Zod schema to validate the query param against
