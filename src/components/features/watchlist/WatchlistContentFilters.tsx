@@ -17,10 +17,15 @@ const sortedByTextMap = {
   'rating.desc': 'Rating (Highest)',
 } satisfies Record<SortKey, string>;
 
+const getSortedByText = (sort: SortFilters | undefined, defaultValue: string) => {
+  if (!sort) return defaultValue;
+
+  const category = sortedByTextMap[`${sort.by}.${sort.order}`];
+  return category ? `Sorted by ${category}` : defaultValue;
+};
+
 export const WatchlistContentFilters: React.FC<{ filters: FilterArgs }> = ({ filters }) => {
-  const sortedByButtonText = filters.sort
-    ? `Sorted by ${sortedByTextMap[`${filters.sort.by}.${filters.sort.order}`]}`
-    : 'Sort';
+  const sortedByButtonText = getSortedByText(filters.sort, 'Sort');
 
   return (
     <div className="mt-4 flex flex-row items-center gap-x-2">
