@@ -114,6 +114,7 @@ export const getServerSideProps: GetServerSideProps<WithSEOProps<{ watchlistId: 
 
   return {
     props: {
+      trpcState: ssg.dehydrate(),
       watchlistId,
       ...optionalSeo(watchlist.isVisibleToPublic, {
         title: watchlist.name,

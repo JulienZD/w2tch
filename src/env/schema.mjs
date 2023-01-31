@@ -27,6 +27,7 @@ export const serverSchema = z.object({
  */
 export const clientSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string(),
+  NEXT_PUBLIC_REPOSITORY: z.string(),
 });
 
 /**
@@ -37,4 +38,5 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+  NEXT_PUBLIC_REPOSITORY: process.env.NEXT_PUBLIC_REPOSITORY,
 };
