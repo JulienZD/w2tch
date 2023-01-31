@@ -1,8 +1,7 @@
 import NiceModal from '@ebay/nice-modal-react';
 import { UserPlusIcon } from '@heroicons/react/24/solid';
-import { TRPCError } from '@trpc/server';
-import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
-import pluralize from 'pluralize';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import { SEO } from '~/components/common/SEO';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { InviteModal } from '~/components/features/watchlist/invite/InviteModal';
@@ -10,16 +9,30 @@ import { WatchlistContent } from '~/components/features/watchlist/WatchListConte
 import { WatchlistContentFilters } from '~/components/features/watchlist/WatchlistContentFilters';
 import { WatchlistOverflowMenu } from '~/components/features/watchlist/WatchlistOverflowMenu';
 import { Pluralize } from '~/components/util/Pluralize';
-import { env } from '~/env/client.mjs';
 import { useFilterWatchlistEntries } from '~/hooks/watchlist/useFilterWatchlistEntries';
-import type { WithSEOProps } from '~/types/ssr';
-import { api, type RouterOutputs } from '~/utils/api';
-import { toPossessive } from '~/utils/language';
+import { api, isApiErrorWithCode, type RouterOutputs } from '~/utils/api';
+import { getWatchlistById } from '~/server/data/watchlist/queries';
 import { optionalSeo } from '~/utils/seo';
-import { createSSGHelper, isLoadedViaClientNavigation } from '~/utils/ssg';
+import pluralize from 'pluralize';
+import { env } from '~/env/client.mjs';
+import { toPossessive } from '~/utils/language';
+import { isLoadedViaClientNavigation } from '~/utils/ssr';
 
-const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId, skippedSSR }) => {
-  const { data: watchlist } = api.watchlist.byId.useQuery({ id: watchlistId });
+const Watchlist: NextPage = () => {
+  const router = useRouter();
+  const watchlistId = router.query.id as string | undefined;
+
+  const { data: watchlist } = api.watchlist.byId.useQuery(
+    { id: watchlistId as string },
+    {
+      enabled: !!watchlistId,
+      onError: (error) => {
+        if (isApiErrorWithCode(error, 'UNAUTHORIZED', 'NOT_FOUND')) {
+          router.push('/404').catch(() => undefined);
+        }
+      },
+    }
+  );
   const { filteredWatchables, ...filters } = useFilterWatchlistEntries(watchlist?.watchables ?? []);
 
   const openInviteModal = async () => {
@@ -36,7 +49,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
   return (
     <>
-      {skippedSSR && <SEO {...getWatchlistSeo(watchlist)} />}
+      <SEO {...getWatchlistSeo(watchlist)} />
       <div className="prose max-w-full">
         <div className="flex flex-col gap-x-0">
           <span>{watchlist.isVisibleToPublic ? 'Public' : 'Private'} watchlist</span>
@@ -82,61 +95,46 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
           readOnly={readOnly}
           isOwner={watchlist.isOwner}
           items={filteredWatchables}
-          watchlistId={watchlistId}
+          watchlistId={watchlist.id}
         />
       </div>
     </>
   );
 };
 
-export default WatchList;
+export default Watchlist;
 
-export const getServerSideProps: GetServerSideProps<
-  WithSEOProps<{ watchlistId: string; skippedSSR?: true }, true>
-> = async (ctx) => {
-  const watchlistId = ctx.params?.id as string | undefined;
+Watchlist.getInitialProps = async (ctx) => {
+  const watchlistId = ctx.query?.id as string | undefined;
 
   if (!watchlistId) {
-    return {
-      notFound: true,
-    };
+    return {};
   }
 
   if (isLoadedViaClientNavigation(ctx.req)) {
-    return {
-      props: {
-        skippedSSR: true,
-        watchlistId,
-      },
-    };
+    return {};
   }
 
-  const { ssg } = await createSSGHelper(ctx);
-  const watchlist = await ssg.watchlist.byId.fetch({ id: watchlistId }).catch((err) => {
-    if (err instanceof TRPCError && err.code === 'PRECONDITION_FAILED') {
-      return {} as never;
-    }
-    return null;
-  });
+  // From here on out it's server side only
+
+  // We have to defer this import to prevent loading server-code on the client
+  const { prisma } = await import('~/server/db/client');
+
+  const watchlist = await getWatchlistById({ id: watchlistId, allowVisibleToPublic: true }, prisma);
 
   if (!watchlist) {
-    return {
-      notFound: true,
-    };
+    return {};
   }
 
-  await ssg.watchlist.byId.prefetch({ id: watchlistId });
-
   return {
-    props: {
-      trpcState: ssg.dehydrate(),
-      watchlistId,
-      ...optionalSeo(watchlist.isVisibleToPublic, getWatchlistSeo(watchlist)),
-    },
+    watchlistId,
+    ...optionalSeo(watchlist?.isVisibleToPublic, getWatchlistSeo(watchlist)),
   };
 };
 
-const getWatchlistSeo = (watchlist: RouterOutputs['watchlist']['byId']) => ({
+type Watchlist = RouterOutputs['watchlist']['byId'];
+
+const getWatchlistSeo = (watchlist: Pick<Watchlist, 'name' | 'owner' | 'watchableCount'>) => ({
   title: watchlist.name,
   description: `
     See ${toPossessive(watchlist.owner?.name ?? 'unknown')} watchlist on ${env.NEXT_PUBLIC_APP_NAME} | ${

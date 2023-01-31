@@ -2,6 +2,7 @@ import { httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
+import { z } from 'zod';
 
 import { type AppRouter } from '../server/trpc/router/_app';
 
@@ -45,6 +46,12 @@ export const api = createTRPCNext<AppRouter>({
             networkMode,
           },
           queries: {
+            retry: (failureCount, error) => {
+              if (isApiErrorWithCode(error, 'UNAUTHORIZED', 'NOT_FOUND')) {
+                return false;
+              }
+              return failureCount < 3;
+            },
             networkMode,
           },
         },
@@ -53,6 +60,21 @@ export const api = createTRPCNext<AppRouter>({
   },
   ssr: false,
 });
+
+const zTRPCError = z.object({
+  data: z.object({
+    code: z.string(),
+  }),
+});
+
+export const isApiErrorWithCode = (error: unknown, ...errorCodes: string[]) => {
+  const parseResult = zTRPCError.safeParse(error);
+  if (!parseResult.success) return false;
+
+  const apiError = parseResult.data;
+
+  return errorCodes.includes(apiError.data.code);
+};
 
 /**
  * Inference helper for inputs
