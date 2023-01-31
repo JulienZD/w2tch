@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
 import type { z } from 'zod';
-import type { watchlistEntryFilterSchema } from '~/models/watchlist';
+import { watchlistEntryFilterSchema } from '~/models/watchlist';
 import type { RouterOutputs } from '~/utils/api';
 import { sortByDate, sortByNumberOrString } from '~/utils/collation';
 import { useQueryParam } from '../useQueryParam';
@@ -14,8 +13,12 @@ type Filters = {
 type Watchables = RouterOutputs['watchlist']['byId']['watchables'];
 
 export const useFilterWatchlistEntries = (watchables: Watchables) => {
-  const [type, setType] = useQueryParam<Filters['type']>('type', undefined);
-  const [sort, setSort] = useState<Filters['sort']>();
+  const [type, setType] = useQueryParam('type', {
+    schema: watchlistEntryFilterSchema.type,
+  });
+  const [sort, setSort] = useQueryParam('sort', {
+    schema: watchlistEntryFilterSchema.sort,
+  });
 
   const clearFilters = () => {
     setType(undefined);

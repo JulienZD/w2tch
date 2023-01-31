@@ -1,3 +1,5 @@
+import { isString } from './validation';
+
 export const sortByDate = <T extends { [P in K]?: Date | null }, K extends keyof T>(
   field: K,
   a: T,
@@ -47,5 +49,3 @@ export const sortByNumberOrString = <T extends { [P in K]?: number | string }, K
 
   return sortOrder * (Number(valueA) - Number(valueB));
 };
-
-const isString = (value: unknown): value is string => typeof value === 'string';

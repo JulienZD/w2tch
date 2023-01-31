@@ -1,41 +1,44 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { z } from 'zod';
+import { isPrimitive, zPrimitive, zStringifiedJson } from '~/utils/validation';
 
-const isPrimitive = (value: unknown): value is string | number | boolean | undefined => {
-  return value === null || value === undefined || (typeof value !== 'object' && typeof value !== 'function');
-};
-
-const zPrimitive = z.union([z.string(), z.number(), z.boolean()]);
-const zStringifiedJson = z.preprocess((v) => {
-  if (typeof v !== 'string') return v;
-  try {
-    return JSON.parse(v);
-  } catch (err) {
-    return v;
-  }
-}, z.record(zPrimitive));
 const zQueryParam = z.union([zStringifiedJson, zPrimitive.array(), zPrimitive]).optional();
 
-export const useQueryParam = <T extends string | Record<string, unknown> | boolean | number | undefined>(
+type UseQueryParamArgs<T extends z.ZodSchema> = {
+  schema: T;
+  fallback?: z.infer<T>;
+};
+
+/**
+ * A hook to get and update a query param with Zod validation
+ *
+ * @param key The query param key
+ * @param options.schema A Zod schema to validate the query param against
+ * @param options.fallback The fallback value to use if the query param is invalid
+ * @returns The value of the query param, and a function to update the query param
+ */
+export const useQueryParam = <T extends z.ZodSchema, R extends z.infer<T> | undefined = z.infer<T> | undefined>(
   key: string,
-  defaultValue?: T
-): [T, (value: T) => void] => {
+  { schema, fallback }: UseQueryParamArgs<T>
+): [R, (value: R) => void] => {
   const router = useRouter();
 
-  const [value, setValue] = useState<T>((): T => {
+  const [value, setValue] = useState<R>((): R => {
     const value = router.query[key];
 
     const parseResult = zQueryParam.safeParse(value);
     if (!parseResult.success) {
       console.warn(`Invalid query param for key ${key}: ${String(value)}`);
-      return defaultValue as T;
+      return fallback as R;
     }
 
-    return parseResult.data as T;
+    const safeValueResult = schema.optional().safeParse(parseResult.data);
+
+    return (safeValueResult.success ? safeValueResult.data : fallback) as R;
   });
 
-  const updateQueryParam = (value: T | undefined) => {
+  const updateQueryParam = (value: R) => {
     if (value) {
       router
         .push(
@@ -62,7 +65,8 @@ export const useQueryParam = <T extends string | Record<string, unknown> | boole
         )
         .catch(() => undefined);
     }
-    setValue(value as T);
+
+    setValue(value);
   };
 
   return [value, updateQueryParam];
