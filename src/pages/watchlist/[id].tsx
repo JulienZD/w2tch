@@ -6,17 +6,20 @@ import pluralize from 'pluralize';
 import { AddItem } from '~/components/features/watchlist/AddItem';
 import { InviteModal } from '~/components/features/watchlist/invite/InviteModal';
 import { WatchlistContent } from '~/components/features/watchlist/WatchListContent';
+import { WatchlistContentFilters } from '~/components/features/watchlist/WatchlistContentFilters';
 import { WatchlistOverflowMenu } from '~/components/features/watchlist/WatchlistOverflowMenu';
 import { Pluralize } from '~/components/util/Pluralize';
 import { env } from '~/env/server.mjs';
+import { useFilterWatchlistEntries } from '~/hooks/watchlist/useFilterWatchlistEntries';
 import type { WithSEOProps } from '~/types/ssr';
+import { api } from '~/utils/api';
 import { toPossessive } from '~/utils/language';
 import { optionalSeo } from '~/utils/seo';
 import { createSSGHelper } from '~/utils/ssg';
-import { api } from '~/utils/api';
 
 const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ watchlistId }) => {
   const { data: watchlist } = api.watchlist.byId.useQuery({ id: watchlistId });
+  const { filteredWatchables, ...filters } = useFilterWatchlistEntries(watchlist?.watchables ?? []);
 
   const openInviteModal = async () => {
     await NiceModal.show(InviteModal, {
@@ -68,9 +71,11 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
       {!readOnly && <AddItem watchlistId={watchlist.id} />}
 
-      <div className="divider" />
+      <WatchlistContentFilters filters={filters} />
 
-      <WatchlistContent readOnly={readOnly} items={watchlist.watchables} watchlistId={watchlistId} />
+      <div className="divider mt-0.5" />
+
+      <WatchlistContent readOnly={readOnly} items={filteredWatchables} watchlistId={watchlistId} />
     </div>
   );
 };

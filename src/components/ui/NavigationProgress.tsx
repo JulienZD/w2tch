@@ -14,8 +14,8 @@ export const NavigationProgress: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      if (url !== router.asPath) {
+    const handleRouteChange = (url: string, options?: { shallow?: boolean }) => {
+      if (!options?.shallow && url !== router.asPath) {
         NProgress.start();
       }
     };

@@ -14,10 +14,12 @@ const minuteFormatter = new Intl.NumberFormat(undefined, {
 });
 
 interface RuntimeProps {
-  minutes: number;
+  minutes?: number | null;
 }
 
-export const Runtime: React.FC<RuntimeProps> = ({ minutes: runtimeInMinutes }) => {
+export const Runtime: React.FC<RuntimeProps> = ({ minutes: _runtimeInMinutes }) => {
+  const runtimeInMinutes = _runtimeInMinutes ?? 0;
+
   const { hours, minutes } = useMemo(() => {
     const hours = Math.floor(runtimeInMinutes / 60);
     const minutes = runtimeInMinutes % 60;
@@ -28,12 +30,11 @@ export const Runtime: React.FC<RuntimeProps> = ({ minutes: runtimeInMinutes }) =
     };
   }, [runtimeInMinutes]);
 
+  const runtimeText = runtimeInMinutes === 0 ? 'Unknown' : runtimeInMinutes > 60 ? `${hours} ${minutes}` : minutes;
   return (
     <span className="flex select-none items-center gap-x-1">
       <ClockIcon className="h-4 w-4 stroke-current" />
-      <span>
-        {runtimeInMinutes >= 60 && hours} {minutes}
-      </span>
+      <span>{runtimeText}</span>
     </span>
   );
 };

@@ -40,7 +40,7 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
               <WatchableType type={item.type} />
               <div className="flex items-center gap-x-2">
                 {item.rating !== undefined && <Rating className="min-w-[2.5rem]" score={item.rating} />}
-                {item.runtime && <Runtime minutes={item.runtime} />}
+                {item.runtime !== undefined && <Runtime minutes={item.runtime} />}
               </div>
             </div>
           </div>
