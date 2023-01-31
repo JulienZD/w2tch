@@ -71,7 +71,7 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
       {!readOnly && <AddItem watchlistId={watchlist.id} />}
 
-      <WatchlistContentFilters filters={filters} />
+      {!!watchlist.watchables.length && <WatchlistContentFilters filters={filters} />}
 
       <div className="divider mt-0.5" />
 
