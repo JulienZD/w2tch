@@ -22,17 +22,14 @@ export const WatchlistContent: React.FC<WatchlistContentProps> = ({ items, watch
         items.map((item) => (
           <li key={item.id} className="not-prose inline-flex h-24 w-full items-center gap-x-4 text-sm">
             {item.image && (
-              <Image
-                src={thumbnail(item.source, item.image, 'sm')}
-                alt=""
-                width={72}
-                height={96}
-                style={{
-                  width: 'auto',
-                  height: 'auto',
-                }}
-                className={`max-h-24 transition ${item.seenOn ? 'grayscale' : ''} rounded`}
-              />
+              <div className="relative h-24 w-16 shrink-0 md:w-[72px]">
+                <Image
+                  src={thumbnail(item.source, item.image, 'sm')}
+                  alt=""
+                  fill
+                  className={`object-cover transition ${item.seenOn ? 'grayscale' : ''} rounded`}
+                />
+              </div>
             )}
             <div
               className={`flex h-full w-full items-center justify-between gap-y-2 ${!item.image ? 'pl-[76px]' : ''} `}
