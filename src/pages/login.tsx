@@ -13,6 +13,7 @@ import { getFormOrMutationErrors } from '~/utils/form/get-errors';
 const Login: NextPage = () => {
   useRedirectIfAuth('/');
 
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -27,11 +28,17 @@ const Login: NextPage = () => {
   const [error, setError] = useState<string | undefined>(undefined);
 
   const onLogin = handleSubmit(async (data) => {
-    const result = await signIn('credentials', { ...data, callbackUrl: returnUrl ?? '/', redirect: false });
-    if (result?.error) {
-      setError(result.error);
-    } else if (result?.ok) {
-      await router.push(returnUrl ?? '/');
+    setLoading(true);
+
+    try {
+      const result = await signIn('credentials', { ...data, callbackUrl: returnUrl ?? '/', redirect: false });
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.ok) {
+        await router.push(returnUrl ?? '/');
+      }
+    } finally {
+      setLoading(false);
     }
   });
 
@@ -60,7 +67,11 @@ const Login: NextPage = () => {
 
           {returnUrl && <input type="hidden" name="returnUrl" value={returnUrl} />}
 
-          <button className="btn-primary btn mt-6 w-full md:mt-4 md:w-auto md:min-w-[6rem]">Login</button>
+          <button
+            className={`btn-primary btn mt-6 w-full md:mt-4 md:w-auto md:min-w-[6rem] ${loading ? 'loading' : ''}`}
+          >
+            Login
+          </button>
         </form>
 
         <p className="mt-6 text-sm">
