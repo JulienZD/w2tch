@@ -7,7 +7,7 @@ const buttonColors = {
   primary: 'btn-primary',
   secondary: 'btn-secondary',
   ghost: 'btn-ghost',
-  danger: 'bg-red-700 hover:bg-red-900 focus-visible:outline-red-700',
+  danger: 'bg-red-700 text-white hover:bg-red-900 focus-visible:outline-red-700',
 };
 
 export type ModalProps = {
