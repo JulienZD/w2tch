@@ -1,11 +1,6 @@
 import { isString } from './validation';
 
-export const sortByDate = <T extends { [P in K]?: Date | null }, K extends keyof T>(
-  field: K,
-  a: T,
-  b: T,
-  sortOrder: 1 | -1
-): number => {
+export const compareDates = <T extends { [P in K]?: Date | null }, K extends keyof T>(field: K, a: T, b: T): number => {
   const dateA = a[field];
   const dateB = b[field];
 
@@ -27,14 +22,13 @@ export const sortByDate = <T extends { [P in K]?: Date | null }, K extends keyof
     sortResult = new Date(dateA).getTime() - new Date(dateB).getTime();
   }
 
-  return sortOrder * sortResult;
+  return sortResult;
 };
 
-export const sortByNumberOrString = <T extends { [P in K]?: number | string }, K extends keyof T>(
+export const compareNumberOrString = <T extends { [P in K]?: number | string }, K extends keyof T>(
   field: K,
   a: T,
-  b: T,
-  sortOrder: 1 | -1
+  b: T
 ): number => {
   const valueA = a[field];
   const valueB = b[field];
@@ -44,8 +38,8 @@ export const sortByNumberOrString = <T extends { [P in K]?: number | string }, K
   }
 
   if (isString(valueA) && isString(valueB)) {
-    return sortOrder * valueA.localeCompare(valueB);
+    return valueA.localeCompare(valueB);
   }
 
-  return sortOrder * (Number(valueA) - Number(valueB));
+  return Number(valueA) - Number(valueB);
 };

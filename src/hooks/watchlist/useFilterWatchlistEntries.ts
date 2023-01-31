@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { watchlistEntryFilterSchema } from '~/models/watchlist';
 import type { RouterOutputs } from '~/utils/api';
-import { sortByDate, sortByNumberOrString } from '~/utils/collation';
+import { compareDates, compareNumberOrString } from '~/utils/comparison';
 import { useQueryParams } from '../useQueryParams';
 
 type FilterSchema = typeof watchlistEntryFilterSchema;
@@ -49,9 +49,9 @@ const collateWatchables = (watchables: Watchables, filters: Filters) => {
       const sortOrder = filters.sort.order === 'asc' ? 1 : -1;
 
       if (sortBy === 'seenAt') {
-        return sortByDate('seenOn', a, b, sortOrder);
+        return sortOrder * compareDates('seenOn', a, b);
       }
 
-      return sortByNumberOrString(sortBy, a, b, sortOrder) || 0;
+      return sortOrder * compareNumberOrString(sortBy, a, b) || 0;
     });
 };
