@@ -2,11 +2,12 @@ import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SEO } from '~/components/common/SEO';
+import { WatchlistCardSkeleton } from '~/components/features/watchlist/WatchlistCardSkeleton';
 import { Pluralize } from '~/components/util/Pluralize';
 import { api } from '~/utils/api';
 
 const Dashboard: NextPage = () => {
-  const { data: watchlists } = api.watchlist.all.useQuery();
+  const { data: watchlists, isLoading } = api.watchlist.all.useQuery();
   const router = useRouter();
 
   return (
@@ -19,6 +20,7 @@ const Dashboard: NextPage = () => {
           Create new
         </Link>
         <div className="flex w-full flex-wrap gap-4">
+          {isLoading && new Array(4).fill(undefined).map((_, i) => <WatchlistCardSkeleton key={i} />)}
           {!!watchlists &&
             watchlists.map((watchlist) => (
               <div

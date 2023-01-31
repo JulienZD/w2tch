@@ -1,12 +1,13 @@
 import { useModal } from '@ebay/nice-modal-react';
 import { Transition, Dialog } from '@headlessui/react';
 import { Fragment, useCallback } from 'react';
+import { useCloseModalOnNavigate } from '~/hooks/modal/useCloseModalOnNavigate';
 
 const buttonColors = {
   primary: 'btn-primary',
   secondary: 'btn-secondary',
   ghost: 'btn-ghost',
-  danger: 'bg-red-700 hover:bg-red-900 focus-visible:outline-red-700',
+  danger: 'bg-red-700 text-white hover:bg-red-900 focus-visible:outline-red-700',
 };
 
 export type ModalProps = {
@@ -29,6 +30,7 @@ export const Modal: React.FC<ModalProps> = ({
   primaryBtnColor = 'primary',
 }) => {
   const modal = useModal();
+  useCloseModalOnNavigate(modal);
 
   const handleCancel = useCallback(async () => {
     if (onCancel) {
