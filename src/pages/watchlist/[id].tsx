@@ -42,7 +42,17 @@ const Watchlist: NextPage = () => {
   };
 
   if (!watchlist) {
-    return null;
+    return (
+      <>
+        <SEO title="Watchlist" />
+        <div className="prose max-w-full">
+          <h1 className="mt-0 pt-0">Watchlist</h1>
+          <div>
+            <span>Loading...</span>
+          </div>
+        </div>
+      </>
+    );
   }
 
   const readOnly = watchlist.isReadOnly;
