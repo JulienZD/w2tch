@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { WithSEOProps } from '~/types/ssr';
-import { createSSGHelper } from '~/utils/ssg';
+import { createSSGHelper } from '~/server/utils/ssg';
 import { api } from '~/utils/api';
 
 const WatchlistInviteByCode: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
