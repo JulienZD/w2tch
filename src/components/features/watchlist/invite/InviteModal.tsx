@@ -1,17 +1,19 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Dialog, Transition } from '@headlessui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as Sentry from '@sentry/nextjs';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { ClipboardCopy } from '~/components/util/ClipboardCopy';
+import { useCloseModalOnNavigate } from '~/hooks/modal/useCloseModalOnNavigate';
 import { expiryOptions, zInvite } from '~/models/watchlistInvite';
 import { api } from '~/utils/api';
 import { InvitesTable } from './InvitesTable';
-import * as Sentry from '@sentry/nextjs';
 
 export const InviteModal = NiceModal.create<{ watchlistId: string }>(({ watchlistId }) => {
   const modal = useModal();
+  useCloseModalOnNavigate(modal);
   const apiUtil = api.useContext();
   const invite = api.invite.create.useMutation();
   const existingInvites = api.watchlist.invitesById.useQuery({ watchlistId });
