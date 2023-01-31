@@ -44,17 +44,33 @@ export const useQueryParams = <T extends z.ZodObject<z.ZodRawShape>>({
     // If we're clearing all query params, remove all params in the schema from the URL
     if (!newQueryParams) {
       Object.keys(schema.shape).forEach((key) => delete newQuery[key]);
+    } else {
+      // Otherwise, remove any query params that are set to undefined
+      Object.entries(newQueryParams).forEach(([k, v]) => {
+        if (v === undefined) {
+          delete newQuery[k];
+        }
+      });
     }
 
     router.push({ query: newQuery }, undefined, { shallow: true }).catch(() => undefined);
 
     setRawQueryParams((current) => {
+      const newRawParams = { ...current, ...newQueryParams };
+
+      // Strip out any query params that are set to undefined
+      Object.entries(newQueryParams ?? {}).forEach(([k, v]) => {
+        if (v === undefined) {
+          delete newRawParams[k];
+        }
+      });
+
       // Strip out any query params that are no longer defined in the schema
       Object.keys(current)
         .filter((key) => newQuery[key] === undefined)
-        .forEach((key) => delete current[key]);
+        .forEach((key) => delete newRawParams[key]);
 
-      return { ...current, ...newQuery };
+      return newRawParams;
     });
   };
 
