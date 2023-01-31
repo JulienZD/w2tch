@@ -75,7 +75,12 @@ const WatchList: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>
 
       <div className="divider mt-0.5" />
 
-      <WatchlistContent readOnly={readOnly} items={filteredWatchables} watchlistId={watchlistId} />
+      <WatchlistContent
+        readOnly={readOnly}
+        isOwner={watchlist.isOwner}
+        items={filteredWatchables}
+        watchlistId={watchlistId}
+      />
     </div>
   );
 };
