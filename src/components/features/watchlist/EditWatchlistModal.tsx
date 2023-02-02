@@ -31,15 +31,19 @@ export const EditWatchlistModal = NiceModal.create<EditWatchlistModalProps>(({ w
 
   if (!watchlist) return null;
 
-  const handleSubmit = form.handleSubmit((data) => {
-    if (editWatchlist.isLoading) return;
-    if (data.name === watchlist.name) return;
-
-    return editWatchlist.mutateAsync({ ...data, id: watchlistId });
-  });
-
   return (
-    <FormModal title="Edit watchlist" isLoading={editWatchlist.isLoading} onSubmit={handleSubmit} onCancel={onCancel}>
+    <FormModal
+      title="Edit watchlist"
+      isLoading={editWatchlist.isLoading}
+      form={form as never}
+      onSubmit={async (data: Parameters<Parameters<(typeof form)['handleSubmit']>[0]>[0]) => {
+        if (editWatchlist.isLoading) return;
+        if (data.name === watchlist.name) return;
+
+        await editWatchlist.mutateAsync({ ...data, id: watchlistId });
+      }}
+      onCancel={onCancel}
+    >
       <div className="form-control">
         <label htmlFor="name" className="label">
           Name

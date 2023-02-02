@@ -1,7 +1,7 @@
 import { useModal } from '@ebay/nice-modal-react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useCallback } from 'react';
-import type { UseFormHandleSubmit } from 'react-hook-form';
+import type { FieldValues, UseFormReturn } from 'react-hook-form';
 
 const buttonColors = {
   primary: 'btn-primary',
@@ -10,29 +10,35 @@ const buttonColors = {
   danger: 'bg-red-700 hover:bg-red-900 focus-visible:outline-red-700',
 };
 
-type SubmitHandler = ReturnType<UseFormHandleSubmit<Record<string, unknown>>>;
+type FormFieldValues<T extends Form> = Parameters<Parameters<T['handleSubmit']>[0]>[0];
 
-export type FormModalProps = {
+// FIXME: Properly infer the field values from the form
+export type FormModalProps<TForm extends Form> = {
   title: string;
   description?: string;
+  form: TForm;
+  onSubmit: (data: FormFieldValues<TForm>) => Promise<undefined | unknown> | (undefined | unknown);
   submitBtnLabel?: string;
   submitBtnColor?: keyof typeof buttonColors;
   isLoading?: boolean;
-  onSubmit: SubmitHandler;
   onCancel?: () => Promise<void> | void;
   children?: React.ReactNode;
 };
 
-export const FormModal: React.FC<FormModalProps> = ({
+type Form = Omit<UseFormReturn<FieldValues>, 'formState'>;
+
+// eslint-disable-next-line func-style
+export function FormModal<TForm extends Form>({
   title,
   onCancel,
   description,
   children,
   onSubmit,
+  form,
   submitBtnLabel = 'Save',
   submitBtnColor = 'primary',
   isLoading = false,
-}) => {
+}: FormModalProps<TForm>): JSX.Element {
   const modal = useModal();
 
   const handleCancel = useCallback(async () => {
@@ -42,17 +48,18 @@ export const FormModal: React.FC<FormModalProps> = ({
     modal.remove();
   }, [onCancel, modal]);
 
-  const handleSubmit = useCallback<SubmitHandler>(
-    async (event) => {
-      try {
-        await onSubmit(event);
-        modal.remove();
-      } catch (error) {
-        console.error(error);
+  const handleSubmit = form.handleSubmit(async (data) => {
+    try {
+      const submitResult = await onSubmit(data);
+      if (submitResult) {
+        modal.resolve(submitResult);
       }
-    },
-    [onSubmit, modal]
-  );
+
+      modal.remove();
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
   return (
     <Transition appear show={modal.visible} as={Fragment}>
@@ -108,4 +115,4 @@ export const FormModal: React.FC<FormModalProps> = ({
       </Dialog>
     </Transition>
   );
-};
+}
