@@ -26,13 +26,19 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery
   const [query, setQuery] = useState(initialQuery ?? '');
   const debouncedQuery = useDebounce(query, 250);
 
-  const data = useTMDBSearch(debouncedQuery);
+  const { status: searchStatus, data: results } = useTMDBSearch(debouncedQuery);
 
-  const items = data.data ?? [];
+  const items = results ?? [];
 
   const filteredItems = excludeItems
     ? items.filter((item) => !excludeItems?.find(({ externalId, type }) => type === item.type && externalId == item.id)) // weak comparison is on purpose
     : items;
+
+  const noResultsMap = {
+    loading: 'Searching...',
+    error: 'An error occurred',
+    success: undefined,
+  } satisfies Record<typeof searchStatus, string | undefined>;
 
   return (
     <Autocomplete
@@ -41,6 +47,7 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery
       onSearch={setQuery}
       query={query}
       openDropdownButton={false}
+      noResultsMessage={noResultsMap[searchStatus]}
       renderValue={({ item, renderOptions }) => {
         const { selected } = renderOptions;
 

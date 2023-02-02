@@ -17,6 +17,7 @@ type AutocompleteProps<T> = {
   onSelect: (item: SelectItem) => void;
   onSearch: (query: string) => void;
   query: string;
+  noResultsMessage?: string;
   renderValue?: React.FC<RenderValueProps<T>>;
   openDropdownButton?: boolean;
   placeholder?: string;
@@ -44,6 +45,7 @@ export function Autocomplete<T>({
   onSelect,
   onSearch,
   query,
+  noResultsMessage = 'No results found',
   openDropdownButton = true,
   placeholder = 'Search...',
   renderValue: RenderValue,
@@ -113,7 +115,7 @@ export function Autocomplete<T>({
                   )}
                   {items.length === 0 && query !== '' ? (
                     <div className="relative cursor-default select-none py-2 px-4 text-base-content">
-                      Nothing found.
+                      {noResultsMessage}
                     </div>
                   ) : (
                     items.map((result) => (
