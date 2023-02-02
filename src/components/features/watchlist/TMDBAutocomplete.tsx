@@ -18,17 +18,27 @@ type TMDBAutocompleteProps = {
 const SEARCH_THUMB_WIDTH = 36;
 const SEARCH_THUMB_HEIGHT = 48;
 
+// These are set here as Tailwind doesn't detect them properly in the component
+const thumbWidth = `w-[${SEARCH_THUMB_WIDTH}px]`;
+const thumbHeight = `h-[${SEARCH_THUMB_HEIGHT}px]`;
+
 export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery, onSelect, excludeItems }) => {
   const [query, setQuery] = useState(initialQuery ?? '');
   const debouncedQuery = useDebounce(query, 250);
 
-  const data = useTMDBSearch(debouncedQuery);
+  const { status: searchStatus, data: results } = useTMDBSearch(debouncedQuery);
 
-  const items = data.data ?? [];
+  const items = results ?? [];
 
   const filteredItems = excludeItems
     ? items.filter((item) => !excludeItems?.find(({ externalId, type }) => type === item.type && externalId == item.id)) // weak comparison is on purpose
     : items;
+
+  const noResultsMap = {
+    loading: 'Searching...',
+    error: 'An error occurred',
+    success: undefined,
+  } satisfies Record<typeof searchStatus, string | undefined>;
 
   return (
     <Autocomplete
@@ -37,23 +47,21 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery
       onSearch={setQuery}
       query={query}
       openDropdownButton={false}
+      noResultsMessage={noResultsMap[searchStatus]}
       renderValue={({ item, renderOptions }) => {
         const { selected } = renderOptions;
 
         return (
           <div className="flex max-h-12 items-center gap-x-2">
             {item.image ? (
-              <Image
-                src={`https://image.tmdb.org/t/p/w92${item.image}`}
-                alt=""
-                width={SEARCH_THUMB_WIDTH}
-                height={SEARCH_THUMB_HEIGHT}
-                style={{
-                  width: 'auto',
-                  height: 'auto',
-                }}
-                className="max-h-12"
-              />
+              <div className={`not-prose relative ${thumbWidth} ${thumbHeight}`}>
+                <Image
+                  src={`https://image.tmdb.org/t/p/w92${item.image}`}
+                  alt=""
+                  fill
+                  className="rounded-sm object-cover"
+                />
+              </div>
             ) : null}
             <div className={`flex flex-col justify-between ${!item.image ? `pl-[${SEARCH_THUMB_WIDTH}px]` : ''}`}>
               <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item.name}</span>
