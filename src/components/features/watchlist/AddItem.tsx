@@ -71,7 +71,7 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
                   setSelectedItem(null);
                 }}
                 data-tip="Clear"
-                className="btn-ghost tooltip tooltip-left z-50 rounded-full md:tooltip-top"
+                className="btn-ghost tooltip tooltip-left rounded-full md:tooltip-top"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
