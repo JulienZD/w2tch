@@ -1,7 +1,8 @@
+import NiceModal from '@ebay/nice-modal-react';
 import type { NextPage } from 'next';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SEO } from '~/components/common/SEO';
+import { CreateWatchlistModal } from '~/components/features/watchlist/CreateWatchlistModal';
 import { WatchlistCardSkeleton } from '~/components/features/watchlist/WatchlistCardSkeleton';
 import { Pluralize } from '~/components/util/Pluralize';
 import { api } from '~/utils/api';
@@ -16,9 +17,17 @@ const Dashboard: NextPage = () => {
       <div className="prose">
         <h1>My watchlists</h1>
         <p>All the watchlists you own or are a member of.</p>
-        <Link className="btn-primary btn-sm btn mb-4" href="/new">
+        <button
+          className="btn-primary btn-sm btn mb-4"
+          onClick={async () => {
+            const createdId = await NiceModal.show(CreateWatchlistModal);
+            if (typeof createdId === 'string') {
+              await router.push(`/watchlist/${createdId}`);
+            }
+          }}
+        >
           Create new
-        </Link>
+        </button>
         <div className="not-prose flex w-full flex-wrap gap-4">
           {isLoading && new Array(4).fill(undefined).map((_, i) => <WatchlistCardSkeleton key={i} />)}
           {!!watchlists &&
