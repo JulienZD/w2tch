@@ -66,7 +66,10 @@ export const AddItem: React.FC<AddItemProps> = ({ watchlistId }) => {
             <div className="flex w-full items-center justify-between">
               <p className="font-bold">{selectedItem.name}</p>
               <button
-                onClick={() => setSelectedItem(null)}
+                onClick={() => {
+                  setQuery('');
+                  setSelectedItem(null);
+                }}
                 data-tip="Clear"
                 className="btn-ghost tooltip tooltip-left z-50 rounded-full md:tooltip-top"
               >
