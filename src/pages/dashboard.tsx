@@ -19,24 +19,26 @@ const Dashboard: NextPage = () => {
         <Link className="btn-primary btn-sm btn mb-4" href="/new">
           Create new
         </Link>
-        <div className="flex w-full flex-wrap gap-4">
+        <div className="not-prose flex w-full flex-wrap gap-4">
           {isLoading && new Array(4).fill(undefined).map((_, i) => <WatchlistCardSkeleton key={i} />)}
           {!!watchlists &&
             watchlists.map((watchlist) => (
               <div
                 key={watchlist.id}
-                // ESlint is disabled because prettier kept messing up the class ordering, leading to false positives
+                // Prettier keeps messing up the class ordering, leading to false positives
                 // eslint-disable-next-line prettier/prettier
-                className="card-compact card glass w-full cursor-pointer md:w-64"
+                className="card-compact card glass w-full cursor-pointer pt-6 pb-2 md:w-64"
                 onClick={() => router.push(`/watchlist/${watchlist.id}`)}
               >
                 <div className="card-body">
-                  <h2 className="card-title">
-                    {watchlist.name}
-                    {watchlist.isOwner && <div className="badge-ghost badge">owner</div>}
-                  </h2>
-                  <Pluralize word="member" count={watchlist.memberCount} />
-                  <Pluralize word="entry" count={watchlist.watchableCount} />
+                  <h2 className="card-title mt-2 inline-block truncate">{watchlist.name}</h2>
+                  <div className="flex justify-between">
+                    <div className="flex flex-col gap-2">
+                      <Pluralize word="member" count={watchlist.memberCount} />
+                      <Pluralize word="entry" count={watchlist.watchableCount} />
+                    </div>
+                    {watchlist.isOwner && <div className="badge-ghost badge font-medium">owner</div>}
+                  </div>
                 </div>
               </div>
             ))}
