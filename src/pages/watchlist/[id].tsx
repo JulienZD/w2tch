@@ -17,6 +17,7 @@ import pluralize from 'pluralize';
 import { env } from '~/env/client.mjs';
 import { toPossessive } from '~/utils/language';
 import { isLoadedViaClientNavigation } from '~/utils/ssr';
+import { WatchlistDetailsSkeleton } from '~/components/features/watchlist/skeletons/WatchlistDetailsSkeleton';
 
 const Watchlist: NextPage = () => {
   const router = useRouter();
@@ -45,12 +46,7 @@ const Watchlist: NextPage = () => {
     return (
       <>
         <SEO title="Watchlist" />
-        <div className="prose max-w-full">
-          <h1 className="mt-0 pt-0">Watchlist</h1>
-          <div>
-            <span>Loading...</span>
-          </div>
-        </div>
+        <WatchlistDetailsSkeleton />
       </>
     );
   }
