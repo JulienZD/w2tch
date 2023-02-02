@@ -48,7 +48,7 @@ export function Autocomplete<T>({
   placeholder = 'Search...',
   renderValue: RenderValue,
 }: AutocompleteProps<T>) {
-  const [selected, setSelected] = useState<SelectItem<T> | undefined>(undefined);
+  const [selected, setSelected] = useState<SelectItem<T> | null>(null);
 
   const handleSelect = useCallback(
     (selectedValue: SelectItem<T>) => {
