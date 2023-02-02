@@ -18,6 +18,10 @@ type TMDBAutocompleteProps = {
 const SEARCH_THUMB_WIDTH = 36;
 const SEARCH_THUMB_HEIGHT = 48;
 
+// These are set here as Tailwind doesn't detect them properly in the component
+const thumbWidth = `w-[${SEARCH_THUMB_WIDTH}px]`;
+const thumbHeight = `h-[${SEARCH_THUMB_HEIGHT}px]`;
+
 export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery, onSelect, excludeItems }) => {
   const [query, setQuery] = useState(initialQuery ?? '');
   const debouncedQuery = useDebounce(query, 250);
@@ -43,17 +47,14 @@ export const TMDBAutocomplete: React.FC<TMDBAutocompleteProps> = ({ initialQuery
         return (
           <div className="flex max-h-12 items-center gap-x-2">
             {item.image ? (
-              <Image
-                src={`https://image.tmdb.org/t/p/w92${item.image}`}
-                alt=""
-                width={SEARCH_THUMB_WIDTH}
-                height={SEARCH_THUMB_HEIGHT}
-                style={{
-                  width: 'auto',
-                  height: 'auto',
-                }}
-                className="max-h-12"
-              />
+              <div className={`not-prose relative ${thumbWidth} ${thumbHeight}`}>
+                <Image
+                  src={`https://image.tmdb.org/t/p/w92${item.image}`}
+                  alt=""
+                  fill
+                  className="rounded-sm object-cover"
+                />
+              </div>
             ) : null}
             <div className={`flex flex-col justify-between ${!item.image ? `pl-[${SEARCH_THUMB_WIDTH}px]` : ''}`}>
               <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{item.name}</span>
