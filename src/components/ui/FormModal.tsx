@@ -19,6 +19,7 @@ type FormModalProps<TForm extends U extends unknown ? FormWithHandler<U> : never
   title: string;
   description?: string;
   form: TForm;
+  // Infer the parameter type from the handler passed to handleSubmit
   onSubmit: (data: Parameters<Parameters<TForm['handleSubmit']>[0]>[0]) => SubmitReturn;
   submitBtnLabel?: string;
   submitBtnColor?: keyof typeof buttonColors;
