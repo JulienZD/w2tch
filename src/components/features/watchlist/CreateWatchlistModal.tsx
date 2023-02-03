@@ -20,7 +20,7 @@ export const CreateWatchlistModal = NiceModal.create<CreateWatchlistModalProps>(
 
   return (
     <FormModal
-      form={form as never}
+      form={form}
       title="New watchlist"
       submitBtnLabel="Create"
       isLoading={createWatchlist.isLoading}

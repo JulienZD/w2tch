@@ -10,14 +10,16 @@ const buttonColors = {
   danger: 'bg-red-700 hover:bg-red-900 focus-visible:outline-red-700',
 };
 
-type FormFieldValues<T extends Form> = Parameters<Parameters<T['handleSubmit']>[0]>[0];
+type SubmitReturn = Promise<undefined | unknown> | (undefined | unknown);
 
-// FIXME: Properly infer the field values from the form
-export type FormModalProps<TForm extends Form> = {
+type FormWithHandler<T> = T extends UseFormReturn<infer TFieldValues> ? Form<TFieldValues> : Form<FieldValues>;
+type Form<TFieldValues extends FieldValues> = Pick<UseFormReturn<TFieldValues>, 'handleSubmit'>;
+
+type FormModalProps<TForm extends U extends unknown ? FormWithHandler<U> : never, U = unknown> = {
   title: string;
   description?: string;
   form: TForm;
-  onSubmit: (data: FormFieldValues<TForm>) => Promise<undefined | unknown> | (undefined | unknown);
+  onSubmit: (data: Parameters<Parameters<TForm['handleSubmit']>[0]>[0]) => SubmitReturn;
   submitBtnLabel?: string;
   submitBtnColor?: keyof typeof buttonColors;
   isLoading?: boolean;
@@ -25,10 +27,7 @@ export type FormModalProps<TForm extends Form> = {
   children?: React.ReactNode;
 };
 
-type Form = Omit<UseFormReturn<FieldValues>, 'formState'>;
-
-// eslint-disable-next-line func-style
-export function FormModal<TForm extends Form>({
+export const FormModal = <TForm extends U extends unknown ? FormWithHandler<U> : never, U = unknown>({
   title,
   onCancel,
   description,
@@ -38,7 +37,7 @@ export function FormModal<TForm extends Form>({
   submitBtnLabel = 'Save',
   submitBtnColor = 'primary',
   isLoading = false,
-}: FormModalProps<TForm>): JSX.Element {
+}: FormModalProps<TForm>): JSX.Element => {
   const modal = useModal();
 
   const handleCancel = useCallback(async () => {
@@ -115,4 +114,4 @@ export function FormModal<TForm extends Form>({
       </Dialog>
     </Transition>
   );
-}
+};
